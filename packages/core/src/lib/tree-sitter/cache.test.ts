@@ -1,9 +1,14 @@
-import { test, expect, beforeEach, beforeAll, afterAll, describe } from "bun:test"
+import "../../testing/test-setup.ts"
+import { test, beforeEach, beforeAll, afterAll, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TreeSitterClient, addDefaultParsers } from "./client"
-import { tmpdir } from "os"
-import { join, resolve } from "path"
-import { mkdir, readdir, stat } from "fs/promises"
+import { tmpdir } from "node:os"
+import { join, resolve, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+import { mkdir, readdir, stat } from "node:fs/promises"
 import type { FiletypeParserOptions } from "./types"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 describe("TreeSitterClient Caching", () => {
   let dataPath: string
@@ -13,19 +18,23 @@ describe("TreeSitterClient Caching", () => {
 
   beforeAll(async () => {
     const assetsDir = resolve(__dirname, "assets")
-    testServer = Bun.serve({
-      port: TEST_PORT,
-      fetch(req) {
-        const url = new URL(req.url)
-        const filePath = join(assetsDir, url.pathname)
-        return new Response(Bun.file(filePath))
-      },
+    const ac = new AbortController()
+    testServer = Deno.serve({ port: TEST_PORT, signal: ac.signal, onListen() {} }, (req) => {
+      const url = new URL(req.url)
+      const filePath = join(assetsDir, url.pathname)
+      try {
+        const data = Deno.readFileSync(filePath)
+        return new Response(data)
+      } catch {
+        return new Response("Not found", { status: 404 })
+      }
     })
+    testServer._ac = ac
   })
 
   afterAll(async () => {
     if (testServer) {
-      testServer.stop()
+      testServer._ac.abort()
     }
   })
 

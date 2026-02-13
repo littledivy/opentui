@@ -1,16 +1,16 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`LineNumberRenderable in ScrollBox single Code renderable with line numbers in ScrollBox - correct dimensions 1`] = `
-"┌────────────────────────────┐                              
-│   1 function test1() {     │                              
-│   2   console.log("Line    │                              
-│     1");                   │                              
-│   3   return 1;            │                              
-│   4 }                      │                              
-│   5 function test2() {     │                              
-│   6   console.log("Line    │                              
-│     2");                   │                              
-└────────────────────────────┘                              
+snapshot[`global > LineNumberRenderable in ScrollBox > single Code renderable with line numbers in ScrollBox - correct dimensions 1`] = `
+'┌────────────────────────────┐                             █
+│  1 function test1() {      │                             █
+│  2   console.log("Line 1") │                             █
+│    ;                       │                             █
+│  3   return 1;             │                             █
+│  4 }                       │                             █
+│  5 function test2() {      │                             █
+│  6   console.log("Line 2") │                             █
+│    ;                       │                             █
+└────────────────────────────┘                             █
                                                             
                                                             
                                                             
@@ -21,11 +21,35 @@ exports[`LineNumberRenderable in ScrollBox single Code renderable with line numb
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox single Code renderable in ScrollBox - scroll and verify dimensions 1`] = `
-"┌──────────────────────────────────────┐                    
+snapshot[`global > LineNumberRenderable in ScrollBox > single Code renderable in ScrollBox - scroll and verify dimensions 1`] = `
+'┌──────────────────────────────────────┐                   █
+│   1 function test1() {               │                   █
+│   2   console.log("Line 1");         │                   █
+│   3   return 1;                      │                   █
+│   4 }                                │                   █
+│   5 function test2() {               │                   █
+│   6   console.log("Line 2");         │                   █
+│   7   return 2;                      │                   █
+│   8 }                                │                   █
+│   9 function test3() {               │                   █
+│  10   console.log("Line 3");         │                    
+└──────────────────────────────────────┘                    
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+'
+`;
+
+snapshot[`global > LineNumberRenderable in ScrollBox > single Code renderable in ScrollBox - scroll and verify dimensions 2`] = `
+'┌──────────────────────────────────────┐                    
 │   1 function test1() {               │                    
 │   2   console.log("Line 1");         │                    
 │   3   return 1;                      │                    
@@ -45,11 +69,11 @@ exports[`LineNumberRenderable in ScrollBox single Code renderable in ScrollBox -
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox single Code renderable in ScrollBox - scroll and verify dimensions 2`] = `
-"┌──────────────────────────────────────┐                    
+snapshot[`global > LineNumberRenderable in ScrollBox > single Code renderable in ScrollBox - scroll and verify dimensions 3`] = `
+'┌──────────────────────────────────────┐                    
 │   1 function test1() {               │                    
 │   2   console.log("Line 1");         │                    
 │   3   return 1;                      │                    
@@ -69,44 +93,20 @@ exports[`LineNumberRenderable in ScrollBox single Code renderable in ScrollBox -
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox single Code renderable in ScrollBox - scroll and verify dimensions 3`] = `
-"┌──────────────────────────────────────┐                    
-│   1 function test1() {               │                    
-│   2   console.log("Line 1");         │                    
-│   3   return 1;                      │                    
-│   4 }                                │                    
-│   5 function test2() {               │                    
-│   6   console.log("Line 2");         │                    
-│   7   return 2;                      │                    
-│   8 }                                │                    
-│   9 function test3() {               │                    
-│  10   console.log("Line 3");         │                    
-└──────────────────────────────────────┘                    
+snapshot[`global > LineNumberRenderable in ScrollBox > multiple Code renderables with line numbers in ScrollBox - correct dimensions 1`] = `
+'┌────────────────────────────────────────────────┐         █
+│  1 function test1() {                          │         ▀
+│  2   console.log("Line 1");                    │          
+│  3   return 1;                                 │          
+│  4 }                                           │          
+│  5 function test2() {                          │          
+│  6   console.log("Line 2");                    │          
+└────────────────────────────────────────────────┘          
                                                             
                                                             
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-"
-`;
-
-exports[`LineNumberRenderable in ScrollBox multiple Code renderables with line numbers in ScrollBox - correct dimensions 1`] = `
-"┌────────────────────────────────────────────────┐         █
-│  1 function test1() {                          │         █
-│  2   console.log("Line 1");                    │         █
-│  3   return 1;                                 │         █
-│  4 }                                           │         █
-│  5 function test2() {                          │         █
-│  6   console.log("Line 2");                    │         █
-└────────────────────────────────────────────────┘         █
-                                                           █
-                                                           █
 ┌────────────────────────────────────────────────┐          
 │  1 function test1() {                          │          
 │  2   console.log("Line 1");                    │          
@@ -117,11 +117,11 @@ exports[`LineNumberRenderable in ScrollBox multiple Code renderables with line n
 └────────────────────────────────────────────────┘          
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox multiple Code renderables with line numbers in ScrollBox - correct dimensions 2`] = `
-"│  5 function test2() {                          │          
+snapshot[`global > LineNumberRenderable in ScrollBox > multiple Code renderables with line numbers in ScrollBox - correct dimensions 2`] = `
+'│  5 function test2() {                          │          
 │  6   console.log("Line 2");                    │          
 └────────────────────────────────────────────────┘          
                                                             
@@ -141,11 +141,35 @@ exports[`LineNumberRenderable in ScrollBox multiple Code renderables with line n
 │  2   console.log("Line 1");                    │          
 │  3   return 1;                                 │          
 │  4 }                                           │          
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox nested boxes with different border styles - dimensions correct 1`] = `
-"╔═════════════════════════════════════════════════════╗     
+snapshot[`global > LineNumberRenderable in ScrollBox > nested boxes with different border styles - dimensions correct 1`] = `
+'╔═════════════════════════════════════════════════════╗    █
+║                                                     ║    █
+║                                                     ║    █
+║  ╭───────────────────────────────────────────╮      ║    █
+║  │                                           │      ║    █
+║  │    1  function test1() {                  │      ║    █
+║  │    2    console.log("Line 1");            │      ║    █
+║  │    3    return 1;                         │      ║    █
+║  │    4  }                                   │      ║    █
+║  │    5  function test2() {                  │      ║    █
+║  │    6    console.log("Line 2");            │      ║     
+║  │    7    return 2;                         │      ║     
+║  │    8  }                                   │      ║     
+║  │    9  function test3() {                  │      ║     
+║  │   10    console.log("Line 3");            │      ║     
+║  │   11    return 3;                         │      ║     
+║  │                                           │      ║     
+║  ╰───────────────────────────────────────────╯      ║     
+╚═════════════════════════════════════════════════════╝     
+                                                            
+'
+`;
+
+snapshot[`global > LineNumberRenderable in ScrollBox > nested boxes with different border styles - dimensions correct 2`] = `
+'╔═════════════════════════════════════════════════════╗     
 ║                                                     ║     
 ║                                                     ║     
 ║  ╭───────────────────────────────────────────╮      ║     
@@ -165,35 +189,11 @@ exports[`LineNumberRenderable in ScrollBox nested boxes with different border st
 ║  ╰───────────────────────────────────────────╯      ║     
 ╚═════════════════════════════════════════════════════╝     
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox nested boxes with different border styles - dimensions correct 2`] = `
-"╔═════════════════════════════════════════════════════╗     
-║                                                     ║     
-║                                                     ║     
-║  ╭───────────────────────────────────────────╮      ║     
-║  │                                           │      ║     
-║  │    1  function test1() {                  │      ║     
-║  │    2    console.log("Line 1");            │      ║     
-║  │    3    return 1;                         │      ║     
-║  │    4  }                                   │      ║     
-║  │    5  function test2() {                  │      ║     
-║  │    6    console.log("Line 2");            │      ║     
-║  │    7    return 2;                         │      ║     
-║  │    8  }                                   │      ║     
-║  │    9  function test3() {                  │      ║     
-║  │   10    console.log("Line 3");            │      ║     
-║  │   11    return 3;                         │      ║     
-║  │                                           │      ║     
-║  ╰───────────────────────────────────────────╯      ║     
-╚═════════════════════════════════════════════════════╝     
-                                                            
-"
-`;
-
-exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertical scrolling - dimensions stable 1`] = `
-"┌────────────────────────────────────────────────┐          
+snapshot[`global > LineNumberRenderable in ScrollBox > ScrollBox with horizontal and vertical scrolling - dimensions stable 1`] = `
+'┌────────────────────────────────────────────────┐          
 │   1 const veryLongVariableName1 = "This is a   │          
 │     very long line that should require         │          
 │     horizontal scrolling to view completely";  │          
@@ -213,11 +213,11 @@ exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertica
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertical scrolling - dimensions stable 2`] = `
-"┌────────────────────────────────────────────────┐          
+snapshot[`global > LineNumberRenderable in ScrollBox > ScrollBox with horizontal and vertical scrolling - dimensions stable 2`] = `
+'┌────────────────────────────────────────────────┐          
 │   1 const veryLongVariableName1 = "This is a   │          
 │     very long line that should require         │          
 │     horizontal scrolling to view completely";  │          
@@ -237,11 +237,11 @@ exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertica
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertical scrolling - dimensions stable 3`] = `
-"┌────────────────────────────────────────────────┐          
+snapshot[`global > LineNumberRenderable in ScrollBox > ScrollBox with horizontal and vertical scrolling - dimensions stable 3`] = `
+'┌────────────────────────────────────────────────┐          
 │   1 const veryLongVariableName1 = "This is a   │          
 │     very long line that should require         │          
 │     horizontal scrolling to view completely";  │          
@@ -261,11 +261,11 @@ exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertica
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertical scrolling - dimensions stable 4`] = `
-"┌────────────────────────────────────────────────┐          
+snapshot[`global > LineNumberRenderable in ScrollBox > ScrollBox with horizontal and vertical scrolling - dimensions stable 4`] = `
+'┌────────────────────────────────────────────────┐          
 │   1 const veryLongVariableName1 = "This is a   │          
 │     very long line that should require         │          
 │     horizontal scrolling to view completely";  │          
@@ -285,20 +285,20 @@ exports[`LineNumberRenderable in ScrollBox ScrollBox with horizontal and vertica
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox gutter width changes with line count - verify remeasure 1`] = `
-"┌──────────────────────────────────────┐                    
-│ 1 function test1() {                 │                    
-│ 2   console.log("Line 1");           │                    
-│ 3   return 1;                        │                    
-│ 4 }                                  │                    
-│ 5 function test2() {                 │                    
-│ 6   console.log("Line 2");           │                    
-│ 7   return 2;                        │                    
-│ 8 }                                  │                    
-│                                      │                    
+snapshot[`global > LineNumberRenderable in ScrollBox > gutter width changes with line count - verify remeasure 1`] = `
+'┌──────────────────────────────────────┐                   █
+│ 1 function test1() {                 │                   █
+│ 2   console.log("Line 1");           │                   █
+│ 3   return 1;                        │                   █
+│ 4 }                                  │                   █
+│ 5 function test2() {                 │                   █
+│ 6   console.log("Line 2");           │                   █
+│ 7   return 2;                        │                   █
+│ 8 }                                  │                   █
+│                                      │                   █
 │                                      │                    
 └──────────────────────────────────────┘                    
                                                             
@@ -309,11 +309,11 @@ exports[`LineNumberRenderable in ScrollBox gutter width changes with line count 
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox gutter width changes with line count - verify remeasure 2`] = `
-"┌──────────────────────────────────────┐                    
+snapshot[`global > LineNumberRenderable in ScrollBox > gutter width changes with line count - verify remeasure 2`] = `
+'┌──────────────────────────────────────┐                    
 │  1 function test1() {                │                    
 │  2   console.log("Line 1");          │                    
 │  3   return 1;                       │                    
@@ -333,11 +333,11 @@ exports[`LineNumberRenderable in ScrollBox gutter width changes with line count 
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox gutter width changes with line count - verify remeasure 3`] = `
-"┌──────────────────────────────────────┐                    
+snapshot[`global > LineNumberRenderable in ScrollBox > gutter width changes with line count - verify remeasure 3`] = `
+'┌──────────────────────────────────────┐                    
 │   1 function test1() {               │                    
 │   2   console.log("Line 1");         │                    
 │   3   return 1;                      │                    
@@ -357,11 +357,35 @@ exports[`LineNumberRenderable in ScrollBox gutter width changes with line count 
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox line colors span full width in ScrollBox 1`] = `
-"┌────────────────────────────────────────────────┐          
+snapshot[`global > LineNumberRenderable in ScrollBox > line colors span full width in ScrollBox 1`] = `
+'┌────────────────────────────────────────────────┐         █
+│  1 function test1() {                          │         █
+│  2   console.log("Line 1");                    │         █
+│  3   return 1;                                 │         █
+│  4 }                                           │         █
+│  5 function test2() {                          │         █
+│  6   console.log("Line 2");                    │         █
+│  7   return 2;                                 │         █
+│  8 }                                           │         █
+│  9 function test3() {                          │         █
+│ 10   console.log("Line 3");                    │          
+└────────────────────────────────────────────────┘          
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+'
+`;
+
+snapshot[`global > LineNumberRenderable in ScrollBox > line colors span full width in ScrollBox 2`] = `
+'┌────────────────────────────────────────────────┐          
 │  1 function test1() {                          │          
 │  2   console.log("Line 1");                    │          
 │  3   return 1;                                 │          
@@ -381,35 +405,11 @@ exports[`LineNumberRenderable in ScrollBox line colors span full width in Scroll
                                                             
                                                             
                                                             
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox line colors span full width in ScrollBox 2`] = `
-"┌────────────────────────────────────────────────┐          
-│  1 function test1() {                          │          
-│  2   console.log("Line 1");                    │          
-│  3   return 1;                                 │          
-│  4 }                                           │          
-│  5 function test2() {                          │          
-│  6   console.log("Line 2");                    │          
-│  7   return 2;                                 │          
-│  8 }                                           │          
-│  9 function test3() {                          │          
-│ 10   console.log("Line 3");                    │          
-└────────────────────────────────────────────────┘          
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-                                                            
-"
-`;
-
-exports[`LineNumberRenderable in ScrollBox viewport culling with line numbers - dimensions stable 1`] = `
-"┌───────────────────────────────────────────┐              ▀
+snapshot[`global > LineNumberRenderable in ScrollBox > viewport culling with line numbers - dimensions stable 1`] = `
+'┌───────────────────────────────────────────┐              ▀
 │  1 function test1() {                     │               
 │  2   console.log("Line 1");               │               
 │  3   return 1;                            │               
@@ -429,11 +429,11 @@ exports[`LineNumberRenderable in ScrollBox viewport culling with line numbers - 
 │  3   return 1;                            │               
 │  4 }                                      │               
 └───────────────────────────────────────────┘               
-"
+'
 `;
 
-exports[`LineNumberRenderable in ScrollBox viewport culling with line numbers - dimensions stable 2`] = `
-"│  2   console.log("Line 1");               │               
+snapshot[`global > LineNumberRenderable in ScrollBox > viewport culling with line numbers - dimensions stable 2`] = `
+'│  2   console.log("Line 1");               │               
 │  3   return 1;                            │               
 │  4 }                                      │               
 └───────────────────────────────────────────┘               
@@ -453,5 +453,5 @@ exports[`LineNumberRenderable in ScrollBox viewport culling with line numbers - 
 └───────────────────────────────────────────┘               
                                                             
 ┌───────────────────────────────────────────┐               
-"
+'
 `;

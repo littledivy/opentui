@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, test } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { beforeEach, describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, MouseButtons, type MockMouse, type TestRenderer } from "../testing"
 import { Renderable, type RenderableOptions } from "../Renderable"
 import type { RenderContext } from "../types"
@@ -55,7 +57,7 @@ describe("renderer handleMouseData", () => {
       }
 
       renderer.stdin.emit("data", Buffer.from("x"))
-      await Bun.sleep(10)
+      await sleep(10)
 
       expect(sequences).toContain("x")
       expect(mouseDown).toBe(false)
@@ -73,7 +75,7 @@ describe("renderer handleMouseData", () => {
       })
 
       renderer.stdin.emit("data", Buffer.from("x"))
-      await Bun.sleep(10)
+      await sleep(10)
 
       expect(sequences).toContain("x")
     } finally {
@@ -1188,7 +1190,7 @@ describe("renderer handleMouseData split height", () => {
       const renderOffset = baseHeight - splitHeight
       const beforeSequences = sequences.length
       await mockMouse.click(1, Math.max(0, renderOffset - 1))
-      await Bun.sleep(10)
+      await sleep(10)
 
       expect(sequences.length).toBeGreaterThan(beforeSequences)
     } finally {

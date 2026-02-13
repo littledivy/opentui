@@ -1,9 +1,13 @@
-import { test, expect, beforeEach, afterEach, describe, spyOn } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
+import { spy as spyOn } from "jsr:@std/testing/mock"
 import {
   Renderable,
   BaseRenderable,
   RootRenderable,
   RenderableEvents,
+  isRenderable,
   type BaseRenderableOptions,
   type RenderableOptions,
 } from "../Renderable"
@@ -118,7 +122,6 @@ describe("Renderable", () => {
   })
 
   test("isRenderable", () => {
-    const { isRenderable } = require("../Renderable")
     const renderable = new TestBaseRenderable({})
     expect(isRenderable(renderable)).toBe(true)
     expect(isRenderable({})).toBe(false)
@@ -392,13 +395,13 @@ describe("Renderable - Child Management", () => {
     const child2 = new TestRenderable(testRenderer, { id: "child2" })
     parent.add(child2)
 
-    const spy = spyOn(child2, "updateFromLayout")
+    const updateSpy = spyOn(child2, "updateFromLayout")
 
     child2.destroy()
 
     await renderOnce()
 
-    expect(spy).not.toHaveBeenCalled()
+    expect(updateSpy.calls.length).toBe(0)
   })
 
   test("newly added children receive correct layout dimensions on first render", async () => {

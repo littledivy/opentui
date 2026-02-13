@@ -1,4 +1,6 @@
-import { describe, test, expect } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import {
   validateOptions,
   isPositionType,

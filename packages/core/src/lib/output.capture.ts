@@ -1,5 +1,5 @@
-import { Writable } from "stream"
-import { EventEmitter } from "events"
+import { Writable } from "node:stream"
+import { EventEmitter } from "node:events"
 
 export type CapturedOutput = {
   stream: "stdout" | "stderr"

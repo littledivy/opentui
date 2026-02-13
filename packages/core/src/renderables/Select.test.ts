@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { SelectRenderable, type SelectRenderableOptions, SelectRenderableEvents, type SelectOption } from "./Select"
 import { createTestRenderer, type MockInput, type TestRenderer } from "../testing/test-renderer"
 import { KeyEvent } from "../lib/KeyHandler"

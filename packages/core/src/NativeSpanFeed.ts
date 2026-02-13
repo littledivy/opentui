@@ -1,4 +1,4 @@
-import { toArrayBuffer, type Pointer } from "bun:ffi"
+import { type Pointer } from "./zig-structs"
 import { resolveRenderLib } from "./zig"
 import { SpanInfoStruct } from "./zig-structs"
 import type { GrowthPolicy, NativeSpanFeedOptions, NativeSpanFeedStats } from "./zig-structs"
@@ -13,18 +13,19 @@ const enum EventId {
   StateBuffer = 8,
 }
 
-function toPointer(value: number | bigint): Pointer {
-  if (typeof value === "bigint") {
-    if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
-      throw new Error("Pointer exceeds safe integer range")
-    }
-    return Number(value) as Pointer
-  }
-  return value as Pointer
+function toPointer(value: number | bigint | Pointer): Pointer {
+  // Already a Deno pointer object — return as-is
+  if (typeof value === "object" && value !== null) return value as Pointer
+  const n = typeof value === "bigint" ? value : BigInt(value)
+  return Deno.UnsafePointer.create(n)!
 }
 
 function toNumber(value: number | bigint): number {
   return typeof value === "bigint" ? Number(value) : value
+}
+
+function ptrKey(p: Pointer): bigint {
+  return Deno.UnsafePointer.value(p)
 }
 
 type StreamEventHandler = (eventId: number, arg0: Pointer, arg1: number | bigint) => void
@@ -71,8 +72,8 @@ export class NativeSpanFeed {
   readonly streamPtr: Pointer
   private readonly lib = resolveRenderLib()
   private readonly eventHandler: StreamEventHandler
-  private chunkMap = new Map<Pointer, ArrayBuffer>()
-  private chunkSizes = new Map<Pointer, number>()
+  private chunkMap = new Map<bigint, ArrayBuffer>()
+  private chunkSizes = new Map<bigint, number>()
   private dataHandlers = new Set<DataHandler>()
   private errorHandlers = new Set<(code: number) => void>()
   private drainBuffer: Uint8Array | null = null
@@ -173,8 +174,8 @@ export class NativeSpanFeed {
         case EventId.StateBuffer: {
           const len = toNumber(arg1)
           if (len > 0 && arg0) {
-            // toArrayBuffer must alias Zig memory so refcount writes are visible.
-            const buffer = toArrayBuffer(arg0, 0, len)
+            // getArrayBuffer must alias Zig memory so refcount writes are visible.
+            const buffer = Deno.UnsafePointerView.getArrayBuffer(arg0, len)
             this.stateBuffer = new Uint8Array(buffer)
           }
           break
@@ -191,11 +192,12 @@ export class NativeSpanFeed {
         case EventId.ChunkAdded: {
           const chunkLen = toNumber(arg1)
           if (chunkLen > 0 && arg0) {
-            if (!this.chunkMap.has(arg0)) {
-              const buffer = toArrayBuffer(arg0, 0, chunkLen)
-              this.chunkMap.set(arg0, buffer)
+            const key = ptrKey(arg0)
+            if (!this.chunkMap.has(key)) {
+              const buffer = Deno.UnsafePointerView.getArrayBuffer(arg0, chunkLen)
+              this.chunkMap.set(key, buffer)
             }
-            this.chunkSizes.set(arg0, chunkLen)
+            this.chunkSizes.set(key, chunkLen)
           }
           break
         }
@@ -239,12 +241,13 @@ export class NativeSpanFeed {
       for (const span of spans) {
         if (span.len === 0) continue
 
-        let buffer = this.chunkMap.get(span.chunkPtr)
+        const chunkKey = ptrKey(span.chunkPtr)
+        let buffer = this.chunkMap.get(chunkKey)
         if (!buffer) {
-          const size = this.chunkSizes.get(span.chunkPtr)
+          const size = this.chunkSizes.get(chunkKey)
           if (!size) continue
-          buffer = toArrayBuffer(span.chunkPtr, 0, size)
-          this.chunkMap.set(span.chunkPtr, buffer)
+          buffer = Deno.UnsafePointerView.getArrayBuffer(span.chunkPtr, size)
+          this.chunkMap.set(chunkKey, buffer)
         }
 
         if (span.offset + span.len > buffer.byteLength) continue

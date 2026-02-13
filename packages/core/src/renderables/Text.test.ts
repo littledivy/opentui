@@ -1,10 +1,13 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TextRenderable, type TextOptions } from "./Text"
 import { TextNodeRenderable } from "./TextNode"
 import { RGBA } from "../lib/RGBA"
 import { stringToStyledText, StyledText } from "../lib/styled-text"
 import { createTestRenderer, type MockMouse, type TestRenderer } from "../testing/test-renderer"
 import { BoxRenderable } from "./Box"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -25,7 +28,7 @@ async function createTextRenderable(
 
 describe("TextRenderable Selection", () => {
   describe("Native getSelectedText", () => {
-    it("should use native implementation", async () => {
+    it("should use native implementation", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -38,7 +41,7 @@ describe("TextRenderable Selection", () => {
       expect(selectedText).toBe("Hello")
     })
 
-    it("should handle graphemes correctly", async () => {
+    it("should handle graphemes correctly", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello 🌍 World",
         selectable: true,
@@ -71,7 +74,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Initialization", () => {
-    it("should initialize properly", async () => {
+    it("should initialize properly", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -85,7 +88,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Basic Selection Flow", () => {
-    it("should handle selection from start to end", async () => {
+    it("should handle selection from start to end", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -110,7 +113,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("World")
     })
 
-    it("should handle selection with newline characters", async () => {
+    it("should handle selection with newline characters", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\nLine 2\nLine 3",
         selectable: true,
@@ -131,7 +134,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("ne 2\nLine")
     })
 
-    it("should handle selection across empty lines", async () => {
+    it("should handle selection across empty lines", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\nLine 2\n\nLine 4",
         selectable: true,
@@ -150,7 +153,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("Line 1\nLine 2")
     })
 
-    it("should handle selection ending in empty line", async () => {
+    it("should handle selection ending in empty line", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\n\nLine 3",
         selectable: true,
@@ -169,7 +172,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("Line 1")
     })
 
-    it("should handle selection spanning multiple lines completely", async () => {
+    it("should handle selection spanning multiple lines completely", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "First\nSecond\nThird",
         selectable: true,
@@ -184,7 +187,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("Second")
     })
 
-    it("should handle selection including multiple line breaks", async () => {
+    it("should handle selection including multiple line breaks", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "A\nB\nC\nD",
         selectable: true,
@@ -202,7 +205,7 @@ describe("TextRenderable Selection", () => {
       expect(selectedText).toContain("C")
     })
 
-    it("should handle selection that includes line breaks at boundaries", async () => {
+    it("should handle selection that includes line breaks at boundaries", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line1\nLine2\nLine3",
         selectable: true,
@@ -220,7 +223,7 @@ describe("TextRenderable Selection", () => {
       expect(selectedText).toContain("Li")
     })
 
-    it("should handle reverse selection (end before start)", async () => {
+    it("should handle reverse selection (end before start)", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -239,7 +242,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Selection Edge Cases", () => {
-    it("should handle empty text", async () => {
+    it("should handle empty text", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -253,7 +256,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("")
     })
 
-    it("should handle single character selection", async () => {
+    it("should handle single character selection", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "A",
         selectable: true,
@@ -270,7 +273,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("A")
     })
 
-    it("should handle zero-width selection", async () => {
+    it("should handle zero-width selection", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -284,7 +287,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("")
     })
 
-    it("should handle selection beyond text bounds", async () => {
+    it("should handle selection beyond text bounds", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hi",
         selectable: true,
@@ -303,7 +306,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Selection with Styled Text", () => {
-    it("should handle styled text selection", async () => {
+    it("should handle styled text selection", async (t) => {
       const styledText = stringToStyledText("Hello World")
       styledText.chunks[0].fg = RGBA.fromValues(1, 0, 0, 1) // Red text
 
@@ -323,7 +326,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("World")
     })
 
-    it("should handle selection with different text colors", async () => {
+    it("should handle selection with different text colors", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Red and Blue",
         selectable: true,
@@ -344,7 +347,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Selection State Management", () => {
-    it("should clear selection when selection is cleared", async () => {
+    it("should clear selection when selection is cleared", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -362,7 +365,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("")
     })
 
-    it("should handle multiple selection changes", async () => {
+    it("should handle multiple selection changes", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World Test",
         selectable: true,
@@ -386,7 +389,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("shouldStartSelection", () => {
-    it("should return false for non-selectable text", async () => {
+    it("should return false for non-selectable text", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: false,
@@ -396,7 +399,7 @@ describe("TextRenderable Selection", () => {
       expect(text.shouldStartSelection(5, 0)).toBe(false)
     })
 
-    it("should return true for selectable text within bounds", async () => {
+    it("should return true for selectable text within bounds", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
         selectable: true,
@@ -407,7 +410,7 @@ describe("TextRenderable Selection", () => {
       expect(text.shouldStartSelection(10, 0)).toBe(true) // End of text
     })
 
-    it("should handle shouldStartSelection with multi-line text", async () => {
+    it("should handle shouldStartSelection with multi-line text", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\nLine 2\nLine 3",
         selectable: true,
@@ -420,7 +423,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Selection with Custom Dimensions", () => {
-    it("should handle selection in constrained width", async () => {
+    it("should handle selection in constrained width", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "This is a very long text that should wrap to multiple lines",
         width: 10,
@@ -439,7 +442,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Cross-Renderable Selection in Nested Boxes", () => {
-    it("should handle selection across multiple nested text renderables in boxes", async () => {
+    it("should handle selection across multiple nested text renderables in boxes", async (t) => {
       const { text: statusText } = await createTextRenderable(currentRenderer, {
         content: "Selected 5 chars:",
         selectable: true,
@@ -505,7 +508,7 @@ describe("TextRenderable Selection", () => {
       expect(globalSelectedText).toContain("Selected renderables: 2/5")
     })
 
-    it("should automatically update selection when text content changes within covered area", async () => {
+    it("should automatically update selection when text content changes within covered area", async (t) => {
       const { text: statusText } = await createTextRenderable(currentRenderer, {
         content: "Selected 5 chars:",
         selectable: true,
@@ -558,7 +561,7 @@ describe("TextRenderable Selection", () => {
       expect(finalGlobalSelectedText).toContain("Selected renderables: 3/5 | Container: statusBox")
     })
 
-    it("should automatically update selection when text node content changes with clear and add", async () => {
+    it("should automatically update selection when text node content changes with clear and add", async (t) => {
       const { text: statusText } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -629,7 +632,7 @@ describe("TextRenderable Selection", () => {
       expect(finalGlobalSelectedText).toContain("Selected renderables: 3/5 | Container: statusBox")
     })
 
-    it("should handle selection that starts above box and ends below/right of box", async () => {
+    it("should handle selection that starts above box and ends below/right of box", async (t) => {
       const { text: statusText } = await createTextRenderable(currentRenderer, {
         content: "Status: Selection active",
         selectable: true,
@@ -686,7 +689,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("TextNode Integration with getPlainText", () => {
-    it("should render correct plain text after adding TextNodes", async () => {
+    it("should render correct plain text after adding TextNodes", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -712,7 +715,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Hello World")
     })
 
-    it("should render correct plain text after inserting TextNodes", async () => {
+    it("should render correct plain text after inserting TextNodes", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -737,7 +740,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Hello! World")
     })
 
-    it("should render correct plain text after removing TextNodes", async () => {
+    it("should render correct plain text after removing TextNodes", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -766,7 +769,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Hello World")
     })
 
-    it("should handle simple add and remove operations", async () => {
+    it("should handle simple add and remove operations", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -786,7 +789,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("")
     })
 
-    it("should render correct plain text after clearing all TextNodes", async () => {
+    it("should render correct plain text after clearing all TextNodes", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -811,7 +814,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("")
     })
 
-    it("should handle nested TextNode structures correctly", async () => {
+    it("should handle nested TextNode structures correctly", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -848,7 +851,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Red Green Blue")
     })
 
-    it("should handle mixed string and TextNode content", async () => {
+    it("should handle mixed string and TextNode content", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -872,7 +875,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Start middle end")
     })
 
-    it("should handle TextNode operations with inherited styles", async () => {
+    it("should handle TextNode operations with inherited styles", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -906,7 +909,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Green Blue")
     })
 
-    it("should handle empty TextNodes correctly", async () => {
+    it("should handle empty TextNodes correctly", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -926,7 +929,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Text")
     })
 
-    it("should handle complex TextNode operations sequence", async () => {
+    it("should handle complex TextNode operations sequence", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -974,7 +977,7 @@ describe("TextRenderable Selection", () => {
       expect(text.plainText).toBe("Initial A X Y C D")
     })
 
-    it("should inherit fg/bg colors from TextRenderable to TextNode children", async () => {
+    it("should inherit fg/bg colors from TextRenderable to TextNode children", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1009,7 +1012,7 @@ describe("TextRenderable Selection", () => {
       expect(chunks[1].text).toBe(" Child2")
     })
 
-    it("should allow TextNode children to override parent TextRenderable colors", async () => {
+    it("should allow TextNode children to override parent TextRenderable colors", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1059,7 +1062,7 @@ describe("TextRenderable Selection", () => {
       expect(chunks[2].bg).toEqual(RGBA.fromValues(0, 0, 1, 1))
     })
 
-    it("should inherit TextRenderable colors through nested TextNode hierarchies", async () => {
+    it("should inherit TextRenderable colors through nested TextNode hierarchies", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1099,7 +1102,7 @@ describe("TextRenderable Selection", () => {
       expect(chunks[2].text).toBe("Deep")
     })
 
-    it("should handle TextRenderable color changes affecting existing TextNode children", async () => {
+    it("should handle TextRenderable color changes affecting existing TextNode children", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1137,7 +1140,7 @@ describe("TextRenderable Selection", () => {
       expect(chunks[1].text).toBe(" Change")
     })
 
-    it("should handle TextNode commands with multiple operations per render", async () => {
+    it("should handle TextNode commands with multiple operations per render", async (t) => {
       const { text, root } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1165,7 +1168,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("StyledText Integration", () => {
-    it("should render StyledText content correctly", async () => {
+    it("should render StyledText content correctly", async (t) => {
       const styledText = stringToStyledText("Hello World")
 
       styledText.chunks[0].fg = RGBA.fromValues(1, 0, 0, 1) // Red text
@@ -1183,7 +1186,7 @@ describe("TextRenderable Selection", () => {
       expect(text.height).toBeGreaterThan(0)
     })
 
-    it("should handle selection with StyledText content", async () => {
+    it("should handle selection with StyledText content", async (t) => {
       const styledText = stringToStyledText("Hello World")
       styledText.chunks[0].fg = RGBA.fromValues(1, 0, 0, 1) // Red text
 
@@ -1202,7 +1205,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("World")
     })
 
-    it("should handle empty StyledText", async () => {
+    it("should handle empty StyledText", async (t) => {
       const emptyStyledText = stringToStyledText("")
 
       const { text, root } = await createTextRenderable(currentRenderer, {
@@ -1217,7 +1220,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("")
     })
 
-    it("should handle StyledText with multiple chunks", async () => {
+    it("should handle StyledText with multiple chunks", async (t) => {
       const styledText = new StyledText([
         { __isChunk: true, text: "Red", fg: RGBA.fromValues(1, 0, 0, 1), attributes: 1 },
         { __isChunk: true, text: " ", fg: undefined, attributes: 0 },
@@ -1241,7 +1244,7 @@ describe("TextRenderable Selection", () => {
       expect(text.getSelectedText()).toBe("Green")
     })
 
-    it("should handle StyledText with TextNodeRenderable children", async () => {
+    it("should handle StyledText with TextNodeRenderable children", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "",
         selectable: true,
@@ -1273,7 +1276,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Text Selection with Truncation", () => {
-    it("should not extend selection across ellipsis in single line", async () => {
+    it("should not extend selection across ellipsis in single line", async (t) => {
       const buffer = currentRenderer.currentRenderBuffer
       const { text } = await createTextRenderable(currentRenderer, {
         content: "0123456789ABCDEFGHIJ",
@@ -1302,7 +1305,7 @@ describe("TextRenderable Selection", () => {
       expect(Math.abs(ellipsisBgB - 0.0)).toBeLessThan(0.05)
     })
 
-    it("should render selection end correctly across ellipsis in last line", async () => {
+    it("should render selection end correctly across ellipsis in last line", async (t) => {
       const buffer = currentRenderer.currentRenderBuffer
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1: This is a long line without wrapping\nLine 2: Another very long line that will be truncated",
@@ -1334,7 +1337,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Text Content Snapshots", () => {
-    it("should render basic text content correctly", async () => {
+    it("should render basic text content correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Hello World",
         left: 5,
@@ -1342,10 +1345,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render multiline text content correctly", async () => {
+    it("should render multiline text content correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Line 1: Hello\nLine 2: World\nLine 3: Testing\nLine 4: Multiline",
         left: 1,
@@ -1353,10 +1356,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render text with graphemes/emojis correctly", async () => {
+    it("should render text with graphemes/emojis correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Hello 🌍 World 👋\n Test 🚀 Emoji",
         left: 0,
@@ -1364,10 +1367,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render TextNode text composition correctly", async () => {
+    it("should render TextNode text composition correctly", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "",
         left: 0,
@@ -1390,10 +1393,10 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render text positioning correctly", async () => {
+    it("should render text positioning correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Top",
         position: "absolute",
@@ -1416,16 +1419,16 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render empty buffer correctly", async () => {
+    it("should render empty buffer correctly", async (t) => {
       currentRenderer.currentRenderBuffer.clear()
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render text with character wrapping correctly", async () => {
+    it("should render text with character wrapping correctly", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "This is a very long text that should wrap to multiple lines when wrap is enabled",
         wrapMode: "char", // Explicitly test character wrapping
@@ -1435,10 +1438,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render wrapped text with different content", async () => {
+    it("should render wrapped text with different content", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789",
         wrapMode: "char", // Explicitly test character wrapping
@@ -1448,10 +1451,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render wrapped text with emojis and graphemes", async () => {
+    it("should render wrapped text with emojis and graphemes", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Hello 🌍 World 👋 This is a test with emojis 🚀 that should wrap properly",
         wrapMode: "char", // Explicitly test character wrapping
@@ -1461,10 +1464,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render wrapped multiline text correctly", async () => {
+    it("should render wrapped multiline text correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "First line with long content\nSecond line also with content\nThird line",
         wrapMode: "char", // Explicitly test character wrapping
@@ -1474,10 +1477,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render text with tab indicator correctly", async () => {
+    it("should render text with tab indicator correctly", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Line 1\tTabbed\nLine 2\t\tDouble tab",
         tabIndicator: "→",
@@ -1487,10 +1490,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should render word wrapped text with CJK and English correctly", async () => {
+    it("should render word wrapped text with CJK and English correctly", async (t) => {
       resize(60, 10)
 
       const { text } = await createTextRenderable(currentRenderer, {
@@ -1517,7 +1520,7 @@ describe("TextRenderable Selection", () => {
       expect(line0_ends_with_kai && line1_starts_with_kai).toBe(false)
     })
 
-    it("should not split English word 'Hello' in middle when word wrapping with CJK characters", async () => {
+    it("should not split English word 'Hello' in middle when word wrapping with CJK characters", async (t) => {
       // This test reproduces the exact issue from text-truncation-demo.ts where "Hello"
       // is incorrectly split as "Hell" on first line and "o World" on second line
       // when word wrapping is enabled with CJK/emoji characters before it.
@@ -1581,7 +1584,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Text Node Dimension Updates", () => {
-    it("should update dimensions and reposition subsequent elements when text nodes expand", async () => {
+    it("should update dimensions and reposition subsequent elements when text nodes expand", async (t) => {
       const { text: firstText } = await createTextRenderable(currentRenderer, {
         content: "",
         width: 20,
@@ -1598,7 +1601,7 @@ describe("TextRenderable Selection", () => {
 
       await renderOnce()
       const initialFrame = captureFrame()
-      expect(initialFrame).toMatchSnapshot()
+      await assertSnapshot(t, initialFrame)
 
       expect(firstText.height).toEqual(1)
       expect(secondText.y).toEqual(1)
@@ -1613,10 +1616,10 @@ describe("TextRenderable Selection", () => {
       expect(secondText.y).toEqual(2)
 
       expect(finalFrame).not.toBe(initialFrame)
-      expect(finalFrame).toMatchSnapshot()
+      await assertSnapshot(t, finalFrame)
     })
 
-    it("should handle multiple text node updates with complex layout changes", async () => {
+    it("should handle multiple text node updates with complex layout changes", async (t) => {
       resize(20, 10)
       const { text: firstText } = await createTextRenderable(currentRenderer, {
         width: 10,
@@ -1640,7 +1643,7 @@ describe("TextRenderable Selection", () => {
 
       await renderOnce()
       const initialFrame = captureFrame()
-      expect(initialFrame).toMatchSnapshot()
+      await assertSnapshot(t, initialFrame)
 
       // Record initial positions
       expect(firstText.height).toEqual(1)
@@ -1653,7 +1656,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const finalFrame = captureFrame()
-      expect(finalFrame).toMatchSnapshot()
+      await assertSnapshot(t, finalFrame)
 
       expect(firstText.height).toEqual(5)
       expect(secondText.y).toEqual(5)
@@ -1662,7 +1665,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Height and Width Measurement", () => {
-    it("should grow height for multiline text without wrapping", async () => {
+    it("should grow height for multiline text without wrapping", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
         wrapMode: "none",
@@ -1674,7 +1677,7 @@ describe("TextRenderable Selection", () => {
       expect(text.width).toBeGreaterThanOrEqual(6)
     })
 
-    it("should grow height for wrapped text when wrapping enabled", async () => {
+    it("should grow height for wrapped text when wrapping enabled", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "This is a very long line that will definitely wrap to multiple lines",
         wrapMode: "word",
@@ -1687,7 +1690,7 @@ describe("TextRenderable Selection", () => {
       expect(text.width).toBeLessThanOrEqual(15)
     })
 
-    it("should measure full width when wrapping is disabled and not constrained by parent", async () => {
+    it("should measure full width when wrapping is disabled and not constrained by parent", async (t) => {
       const longLine = "This is a very long line that would wrap but wrapping is disabled"
       const { text } = await createTextRenderable(currentRenderer, {
         content: longLine,
@@ -1701,7 +1704,7 @@ describe("TextRenderable Selection", () => {
       expect(text.width).toBe(longLine.length)
     })
 
-    it("should update height when content changes from single to multiline", async () => {
+    it("should update height when content changes from single to multiline", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Single line",
         wrapMode: "none",
@@ -1716,7 +1719,7 @@ describe("TextRenderable Selection", () => {
       expect(text.height).toBe(3)
     })
 
-    it("should update height when wrapping mode changes", async () => {
+    it("should update height when wrapping mode changes", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "This is a long line that will wrap to multiple lines",
         wrapMode: "none",
@@ -1737,7 +1740,7 @@ describe("TextRenderable Selection", () => {
       expect(wrappedHeight).toBeGreaterThanOrEqual(3)
     })
 
-    it("should shrink height when content changes from multi-line to single line", async () => {
+    it("should shrink height when content changes from multi-line to single line", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
         wrapMode: "none",
@@ -1752,7 +1755,7 @@ describe("TextRenderable Selection", () => {
       expect(text.height).toBe(1)
     })
 
-    it("should shrink width when replacing long line with shorter (wrapMode: none, position: absolute)", async () => {
+    it("should shrink width when replacing long line with shorter (wrapMode: none, position: absolute)", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "This is a very long line with many characters",
         wrapMode: "none",
@@ -1772,7 +1775,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Width/Height Setter Layout Tests", () => {
-    it("should not shrink box when width is set via setter", async () => {
+    it("should not shrink box when width is set via setter", async (t) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1801,14 +1804,14 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       expect(indicator.width).toBe(5)
       expect(content.width).toBeGreaterThan(0)
       expect(content.width).toBeLessThan(30) // Should be compressed but not zero
     })
 
-    it("should not shrink box when height is set via setter in column layout with text", async () => {
+    it("should not shrink box when height is set via setter in column layout with text", async (t) => {
       resize(30, 15)
 
       const outerBox = new BoxRenderable(currentRenderer, { border: true, width: 25, height: 10 })
@@ -1843,14 +1846,14 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       expect(header.height).toBe(3)
       expect(mainContent.height).toBeGreaterThan(0)
       expect(footer.height).toBe(2)
     })
 
-    it("should not shrink box when minWidth is set via setter", async () => {
+    it("should not shrink box when minWidth is set via setter", async (t) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1877,13 +1880,13 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       expect(indicator.width).toBeGreaterThanOrEqual(5)
       expect(content.width).toBeGreaterThan(0)
     })
 
-    it("should not shrink box when minHeight is set via setter in column layout with text", async () => {
+    it("should not shrink box when minHeight is set via setter in column layout with text", async (t) => {
       resize(30, 15)
 
       const outerBox = new BoxRenderable(currentRenderer, { border: true, width: 25, height: 10 })
@@ -1918,14 +1921,14 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       expect(header.height).toBeGreaterThanOrEqual(3)
       expect(mainContent.height).toBeGreaterThan(0)
       expect(footer.height).toBe(2)
     })
 
-    it("should not shrink box when width is set from undefined via setter", async () => {
+    it("should not shrink box when width is set from undefined via setter", async (t) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1952,7 +1955,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       expect(indicator.width).toBe(5)
       expect(content.width).toBeGreaterThan(0)
@@ -1960,7 +1963,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Absolute Positioned Box with Text", () => {
-    it("should render text in absolute positioned box with padding and borders correctly", async () => {
+    it("should render text in absolute positioned box with padding and borders correctly", async (t) => {
       resize(80, 20)
 
       const notificationBox = new BoxRenderable(currentRenderer, {
@@ -2018,7 +2021,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       // Verify the box is positioned correctly
       expect(notificationBox.x).toBeGreaterThan(0)
@@ -2039,7 +2042,7 @@ describe("TextRenderable Selection", () => {
       )
     })
 
-    it("should render text fully visible in absolute positioned box at various positions", async () => {
+    it("should render text fully visible in absolute positioned box at various positions", async (t) => {
       resize(100, 25)
 
       // Top-right positioned box
@@ -2091,7 +2094,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       // Verify top-right box positioning and dimensions
       expect(topRightBox.y).toBe(1)
@@ -2120,7 +2123,7 @@ describe("TextRenderable Selection", () => {
       expect(bottomLeftText.width).toBeLessThanOrEqual(33) // maxWidth 35 - padding 2
     })
 
-    it("should handle width:100% text in absolute positioned box with constrained maxWidth", async () => {
+    it("should handle width:100% text in absolute positioned box with constrained maxWidth", async (t) => {
       resize(70, 15)
 
       const constrainedBox = new BoxRenderable(currentRenderer, {
@@ -2148,7 +2151,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       // Verify the box respects maxWidth
       expect(constrainedBox.width).toBeLessThanOrEqual(50)
@@ -2165,7 +2168,7 @@ describe("TextRenderable Selection", () => {
       )
     })
 
-    it("should render multiple text elements in absolute positioned box with proper spacing", async () => {
+    it("should render multiple text elements in absolute positioned box with proper spacing", async (t) => {
       resize(90, 20)
 
       const infoBox = new BoxRenderable(currentRenderer, {
@@ -2211,7 +2214,7 @@ describe("TextRenderable Selection", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
 
       // Verify all texts are rendered with correct content
       expect(headerText.plainText).toBe("System Update")
@@ -2241,7 +2244,7 @@ describe("TextRenderable Selection", () => {
   })
 
   describe("Word Wrapping", () => {
-    it("should default to word wrap mode", async () => {
+    it("should default to word wrap mode", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Hello World",
       })
@@ -2249,7 +2252,7 @@ describe("TextRenderable Selection", () => {
       expect(text.wrapMode).toBe("word")
     })
 
-    it("should wrap at word boundaries when using word mode", async () => {
+    it("should wrap at word boundaries when using word mode", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "The quick brown fox jumps over the lazy dog",
         wrapMode: "word",
@@ -2259,10 +2262,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should wrap at character boundaries when using char mode", async () => {
+    it("should wrap at character boundaries when using char mode", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "The quick brown fox jumps over the lazy dog",
         wrapMode: "char",
@@ -2272,10 +2275,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should handle word wrapping with punctuation", async () => {
+    it("should handle word wrapping with punctuation", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "Hello,World.Test-Example/Path",
         wrapMode: "word",
@@ -2285,10 +2288,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should handle word wrapping with hyphens and dashes", async () => {
+    it("should handle word wrapping with hyphens and dashes", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "self-contained multi-line text-wrapping example",
         wrapMode: "word",
@@ -2298,10 +2301,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should dynamically change wrap mode", async () => {
+    it("should dynamically change wrap mode", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "The quick brown fox jumps",
         wrapMode: "char",
@@ -2318,10 +2321,10 @@ describe("TextRenderable Selection", () => {
 
       expect(text.wrapMode).toBe("word")
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should handle long words that exceed wrap width in word mode", async () => {
+    it("should handle long words that exceed wrap width in word mode", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         wrapMode: "word",
@@ -2332,10 +2335,10 @@ describe("TextRenderable Selection", () => {
 
       // Since there's no word boundary, it should fall back to character wrapping
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should preserve empty lines with word wrapping", async () => {
+    it("should preserve empty lines with word wrapping", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "First line\n\nThird line",
         wrapMode: "word",
@@ -2345,10 +2348,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should handle word wrapping with single character words", async () => {
+    it("should handle word wrapping with single character words", async (t) => {
       await createTextRenderable(currentRenderer, {
         content: "a b c d e f g h i j k l m n o p",
         wrapMode: "word",
@@ -2358,10 +2361,10 @@ describe("TextRenderable Selection", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(t, frame)
     })
 
-    it("should compare char vs word wrapping with same content", async () => {
+    it("should compare char vs word wrapping with same content", async (t) => {
       const content = "Hello wonderful world of text wrapping"
 
       // Test with char mode
@@ -2391,10 +2394,10 @@ describe("TextRenderable Selection", () => {
 
       // The frames should be different as word wrapping preserves word boundaries
       expect(charFrame).not.toBe(wordFrame)
-      expect(wordFrame).toMatchSnapshot()
+      await assertSnapshot(t, wordFrame)
     })
 
-    it("should correctly wrap text when updating content via text.content", async () => {
+    it("should correctly wrap text when updating content via text.content", async (t) => {
       const { text } = await createTextRenderable(currentRenderer, {
         content: "Short text",
         wrapMode: "word",
@@ -2404,18 +2407,18 @@ describe("TextRenderable Selection", () => {
 
       await renderOnce()
       const initialFrame = captureFrame()
-      expect(initialFrame).toMatchSnapshot()
+      await assertSnapshot(t, initialFrame)
 
       text.content = "This is a much longer text that should definitely wrap to multiple lines"
 
       await renderOnce()
       const updatedFrame = captureFrame()
-      expect(updatedFrame).toMatchSnapshot()
+      await assertSnapshot(t, updatedFrame)
     })
   })
 
   describe("Mouse Scrolling", () => {
-    it("should receive mouse scroll events", async () => {
+    it("should receive mouse scroll events", async (t) => {
       resize(20, 10)
 
       const longText = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
@@ -2448,7 +2451,7 @@ describe("TextRenderable Selection", () => {
       expect(scrollInfo?.direction).toBe("down")
     })
 
-    it("should handle mouse scroll events for vertical scrolling", async () => {
+    it("should handle mouse scroll events for vertical scrolling", async (t) => {
       resize(20, 5)
 
       const longText = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
@@ -2478,7 +2481,7 @@ describe("TextRenderable Selection", () => {
       expect(text.scrollY).toBe(2)
     })
 
-    it("should handle mouse scroll events for horizontal scrolling with unwrapped text", async () => {
+    it("should handle mouse scroll events for horizontal scrolling with unwrapped text", async (t) => {
       resize(80, 5)
 
       const wideText =
@@ -2511,7 +2514,7 @@ describe("TextRenderable Selection", () => {
       expect(text.scrollX).toBe(3)
     })
 
-    it("should not allow horizontal scrolling when text is wrapped", async () => {
+    it("should not allow horizontal scrolling when text is wrapped", async (t) => {
       resize(20, 5)
 
       const longText =
@@ -2544,7 +2547,7 @@ describe("TextRenderable Selection", () => {
       }
     })
 
-    it("should clamp scroll position to valid bounds", async () => {
+    it("should clamp scroll position to valid bounds", async (t) => {
       resize(20, 5)
 
       const shortText = "Line 1\nLine 2\nLine 3"
@@ -2574,7 +2577,7 @@ describe("TextRenderable Selection", () => {
       expect(text.scrollY).toBe(0)
     })
 
-    it("should expose scrollWidth and scrollHeight getters", async () => {
+    it("should expose scrollWidth and scrollHeight getters", async (t) => {
       resize(20, 5)
 
       const text = "Line 1\nLine 2 with more content\nLine 3"
@@ -2589,7 +2592,7 @@ describe("TextRenderable Selection", () => {
       expect(textRenderable.scrollWidth).toBeGreaterThan(0) // Max width of lines
     })
 
-    it("should calculate maxScrollY and maxScrollX correctly", async () => {
+    it("should calculate maxScrollY and maxScrollX correctly", async (t) => {
       resize(20, 5)
 
       const text = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8"
@@ -2608,7 +2611,7 @@ describe("TextRenderable Selection", () => {
       expect(textRenderable.maxScrollX).toBe(Math.max(0, textRenderable.scrollWidth - textRenderable.width))
     })
 
-    it("should update scroll position via setters", async () => {
+    it("should update scroll position via setters", async (t) => {
       resize(20, 5)
 
       const longText =

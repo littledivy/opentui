@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test"
+import "./test-setup.ts"
+import { describe, test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "./test-renderer"
 import { TextRenderable } from "../renderables/Text"
 import { BoxRenderable } from "../renderables/Box"

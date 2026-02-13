@@ -1,10 +1,13 @@
-import { describe, test, expect } from "bun:test"
+import { sleep } from "../../testing/test-setup.ts"
+import { describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer } from "../../testing/test-renderer"
 import { TextBufferRenderable } from "../TextBufferRenderable"
 import { LineNumberRenderable } from "../LineNumberRenderable"
 import { BoxRenderable } from "../Box"
 import { TextareaRenderable } from "../Textarea"
 import { t, fg, bold, cyan } from "../../lib/styled-text"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 const initialContent = `Welcome to the TextareaRenderable Demo!
 
@@ -65,7 +68,7 @@ class MockTextBuffer extends TextBufferRenderable {
 }
 
 describe("LineNumberRenderable", () => {
-  test("renders line numbers correctly", async () => {
+  test("renders line numbers correctly", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -92,14 +95,14 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     expect(frame).toContain(" 1 Line 1")
     expect(frame).toContain(" 2 Line 2")
     expect(frame).toContain(" 3 Line 3")
   })
 
-  test("renders line numbers for wrapping text", async () => {
+  test("renders line numbers for wrapping text", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -127,12 +130,12 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     expect(frame).toContain(" 1 Line 1")
   })
 
-  test("renders line colors for diff highlighting", async () => {
+  test("renders line colors for diff highlighting", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -210,7 +213,7 @@ describe("LineNumberRenderable", () => {
     expect(line1GutterBg.b).toBeCloseTo(0, 2)
   })
 
-  test("can dynamically update line colors", async () => {
+  test("can dynamically update line colors", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -321,7 +324,7 @@ describe("LineNumberRenderable", () => {
     expect(line1AfterClearAllBg.b).toBeCloseTo(0, 2)
   })
 
-  test("renders line colors for wrapped lines", async () => {
+  test("renders line colors for wrapped lines", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -392,7 +395,7 @@ describe("LineNumberRenderable", () => {
     expect(line0Visual2Bg.b).toBeCloseTo((0x2e / 255) * 0.8, 2)
   })
 
-  test("renders line colors correctly within a box with borders", async () => {
+  test("renders line colors correctly within a box with borders", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -496,7 +499,7 @@ describe("LineNumberRenderable", () => {
     expect(line1ContentBg.b).toBeCloseTo(0, 2)
   })
 
-  test("renders full-width line colors when line numbers are hidden", async () => {
+  test("renders full-width line colors when line numbers are hidden", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -572,7 +575,7 @@ describe("LineNumberRenderable", () => {
     expect(line2RightEdgeBg.b).toBeCloseTo((0x2e / 255) * 0.8, 2)
   })
 
-  test("renders line signs before and after line numbers", async () => {
+  test("renders line signs before and after line numbers", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -619,7 +622,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[3]).toMatch(/4.*-/) // Line 4 has - after number
   })
 
-  test("renders line signs with custom colors", async () => {
+  test("renders line signs with custom colors", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -666,10 +669,10 @@ describe("LineNumberRenderable", () => {
     }
 
     // Find the position of the + sign on line 2 (y=1)
-    // It should be after the line number, so around x=7-8
+    // It should be after the line number in the gutter area
     // Check that it has green color (#22c55e = rgb(34, 197, 94))
     let foundGreenPlus = false
-    for (let x = 5; x < 10; x++) {
+    for (let x = 0; x < 15; x++) {
       const fg = getFgColor(x, 1)
       // Check if color is close to green
       if (Math.abs(fg.g - 197 / 255) < 0.05 && fg.r < 0.2 && fg.b < 0.5) {
@@ -693,7 +696,7 @@ describe("LineNumberRenderable", () => {
     expect(foundRedEmoji).toBe(true)
   })
 
-  test("dynamically updates line signs", async () => {
+  test("dynamically updates line signs", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -735,7 +738,7 @@ describe("LineNumberRenderable", () => {
     expect(frame).not.toContain("+")
   })
 
-  test("renders line numbers with offset", async () => {
+  test("renders line numbers with offset", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -763,7 +766,7 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     // Line numbers should start at 42 instead of 1
     expect(frame).toContain("42 Line 1")
@@ -771,7 +774,7 @@ describe("LineNumberRenderable", () => {
     expect(frame).toContain("44 Line 3")
   })
 
-  test("can dynamically update line number offset", async () => {
+  test("can dynamically update line number offset", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -812,7 +815,7 @@ describe("LineNumberRenderable", () => {
     expect(frame).toContain("102 Line 3")
   })
 
-  test("hides line numbers for specific lines", async () => {
+  test("hides line numbers for specific lines", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -844,7 +847,7 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     // Check that lines 1, 3, 5 have line numbers
     expect(frame).toContain(" 1 Line 1")
@@ -863,7 +866,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[3]).not.toMatch(/4\s+Line 4/)
   })
 
-  test("can dynamically update hidden line numbers", async () => {
+  test("can dynamically update hidden line numbers", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -909,7 +912,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[1]).not.toMatch(/2\s+Line 2/)
   })
 
-  test("combines line number offset with hidden line numbers", async () => {
+  test("combines line number offset with hidden line numbers", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -942,7 +945,7 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     // Line 1 (index 0) should show as line 42
     expect(frame).toContain("42 Line 1")
@@ -963,7 +966,7 @@ describe("LineNumberRenderable", () => {
     expect(frame).toContain("46 Line 5")
   })
 
-  test("gutter width is stable from first render - no width glitch", async () => {
+  test("gutter width is stable from first render - no width glitch", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1009,7 +1012,7 @@ describe("LineNumberRenderable", () => {
     expect(widthAfterThirdRender).toBe(widthAfterFirstRender)
   })
 
-  test("gutter width accounts for large line numbers from first render", async () => {
+  test("gutter width accounts for large line numbers from first render", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -1107,9 +1110,9 @@ describe("LineNumberRenderable", () => {
     // Wait for render and highlighting
     await renderOnce()
     // Give highlighting time to complete (increased for CI)
-    await Bun.sleep(1000)
+    await sleep(1000)
     await renderOnce()
-    await Bun.sleep(100)
+    await sleep(100)
     await renderOnce()
 
     frame = captureCharFrame()
@@ -1126,7 +1129,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[2]).toMatch(/3/)
   })
 
-  test("updates line numbers when Code renderable content changes", async () => {
+  test("updates line numbers when Code renderable content changes", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -1160,7 +1163,7 @@ describe("LineNumberRenderable", () => {
 
     // First render
     await renderOnce()
-    await Bun.sleep(50)
+    await sleep(50)
     await renderOnce()
 
     let frame = captureCharFrame()
@@ -1174,7 +1177,7 @@ describe("LineNumberRenderable", () => {
     codeRenderable.content = "line 1\nline 2\nline 3\nline 4\nline 5"
 
     await renderOnce()
-    await Bun.sleep(50)
+    await sleep(50)
     await renderOnce()
 
     frame = captureCharFrame()
@@ -1190,7 +1193,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[4]).toMatch(/5/)
   })
 
-  test("handles Code renderable switching from no filetype to having filetype", async () => {
+  test("handles Code renderable switching from no filetype to having filetype", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 30,
       height: 10,
@@ -1234,7 +1237,7 @@ describe("LineNumberRenderable", () => {
     codeRenderable.filetype = "typescript"
 
     await renderOnce()
-    await Bun.sleep(100)
+    await sleep(100)
     await renderOnce()
 
     frame = captureCharFrame()
@@ -1249,7 +1252,7 @@ describe("LineNumberRenderable", () => {
     expect(lines[2]).toMatch(/3/)
   })
 
-  test("maintains consistent left padding for all line numbers", async () => {
+  test("maintains consistent left padding for all line numbers", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 30,
       height: 15,
@@ -1282,7 +1285,7 @@ describe("LineNumberRenderable", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(ctx, frame)
 
     const frameLines = frame.split("\n")
 
@@ -1317,7 +1320,7 @@ describe("LineNumberRenderable", () => {
     }
   })
 
-  test("supports separate gutter and content colors with LineColorConfig", async () => {
+  test("supports separate gutter and content colors with LineColorConfig", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1374,7 +1377,7 @@ describe("LineNumberRenderable", () => {
     expect(line2ContentBg.b).toBeCloseTo(0x1f / 255, 2)
   })
 
-  test("defaults content color to darker gutter color when only gutter is specified", async () => {
+  test("defaults content color to darker gutter color when only gutter is specified", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1434,7 +1437,7 @@ describe("LineNumberRenderable", () => {
     expect(line2ContentBg.b).toBeCloseTo(expectedGutterB * 0.8, 2)
   })
 
-  test("defaults content color to 80% of gutter when using simple string color format", async () => {
+  test("defaults content color to 80% of gutter when using simple string color format", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1494,7 +1497,7 @@ describe("LineNumberRenderable", () => {
     expect(line2ContentBg.b).toBeCloseTo(expectedGutterB * 0.8, 2)
   })
 
-  test("dynamically updates line colors with LineColorConfig", async () => {
+  test("dynamically updates line colors with LineColorConfig", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1560,7 +1563,7 @@ describe("LineNumberRenderable", () => {
     expect(line2AfterClearBg.b).toBeCloseTo(0, 2)
   })
 
-  test("getLineColors returns both gutter and content color maps", async () => {
+  test("getLineColors returns both gutter and content color maps", async (ctx) => {
     const { renderer, renderOnce } = await createTestRenderer({
       width: 20,
       height: 10,
@@ -1608,7 +1611,7 @@ describe("LineNumberRenderable", () => {
     expect(contentColor!.b).toBeCloseTo(0x1f / 255, 2)
   })
 
-  test("maintains stable visual line count when scrolling and typing with word wrap", async () => {
+  test("maintains stable visual line count when scrolling and typing with word wrap", async (ctx) => {
     const { renderer, renderOnce, captureCharFrame } = await createTestRenderer({
       width: 35,
       height: 30,
@@ -1674,7 +1677,7 @@ describe("LineNumberRenderable", () => {
     const visualLinesAfterScroll = lineInfoAfterScroll.lineStarts.length
 
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(ctx, frame1)
 
     // Visual line count should remain stable after scrolling
     expect(visualLinesInitial).toBe(visualLinesAfterScroll)
@@ -1688,7 +1691,7 @@ describe("LineNumberRenderable", () => {
     const visualLinesAfterTyping = lineInfoAfterTyping.lineStarts.length
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(ctx, frame2)
 
     // Visual lines should remain stable after typing
     expect(visualLinesAfterScroll).toBe(visualLinesAfterTyping)

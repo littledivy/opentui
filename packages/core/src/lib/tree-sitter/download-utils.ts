@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from "fs/promises"
-import * as path from "path"
+import { mkdir, writeFile } from "node:fs/promises"
+import * as path from "node:path"
 
 export interface DownloadResult {
   content?: ArrayBuffer
@@ -45,7 +45,7 @@ export class DownloadUtils {
       await mkdir(path.dirname(cacheFile), { recursive: true })
 
       try {
-        const cachedContent = await Bun.file(cacheFile).arrayBuffer()
+        const cachedContent = (await Deno.readFile(cacheFile)).buffer
         if (cachedContent.byteLength > 0) {
           console.log(`Loaded from cache: ${cacheFile} (${source})`)
           return { content: cachedContent, filePath: cacheFile }
@@ -76,7 +76,7 @@ export class DownloadUtils {
     } else {
       try {
         console.log(`Loading from local path: ${source}`)
-        const content = await Bun.file(source).arrayBuffer()
+        const content = (await Deno.readFile(source)).buffer
         return { content, filePath: source }
       } catch (error) {
         return { error: `Error loading from local path ${source}: ${error}` }
@@ -111,7 +111,7 @@ export class DownloadUtils {
     } else {
       try {
         console.log(`Copying from local path: ${source}`)
-        const content = await Bun.file(source).arrayBuffer()
+        const content = (await Deno.readFile(source)).buffer
         await writeFile(targetPath, Buffer.from(content))
         return { content, filePath: targetPath }
       } catch (error) {

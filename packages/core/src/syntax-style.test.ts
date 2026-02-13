@@ -1,4 +1,6 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test"
+import "./testing/test-setup.ts"
+import { describe, it, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { SyntaxStyle } from "./syntax-style"
 import { RGBA } from "./lib/RGBA"
 import type { StyleDefinition, ThemeTokenStyle } from "./syntax-style"
@@ -311,7 +313,7 @@ describe("NativeSyntaxStyle", () => {
     it("should return a valid pointer", () => {
       const ptr = style.ptr
       expect(ptr).toBeDefined()
-      expect(typeof ptr).toBe("number")
+      expect(ptr !== null && ptr !== undefined).toBe(true)
     })
 
     it("should return same pointer for same instance", () => {

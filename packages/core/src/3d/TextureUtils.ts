@@ -15,7 +15,7 @@ export class TextureUtils {
    */
   static async loadTextureFromFile(path: string): Promise<DataTexture | null> {
     try {
-      const buffer = await Bun.file(path).arrayBuffer()
+      const buffer = (await Deno.readFile(path)).buffer
       const image = await Jimp.read(buffer)
 
       image.flip({ horizontal: false, vertical: true })

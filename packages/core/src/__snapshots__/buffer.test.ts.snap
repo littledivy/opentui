@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`OptimizedBuffer snapshot tests with unicode encoding should render ASCII text correctly: ASCII text rendering 1`] = `
+snapshot[`OptimizedBuffer > snapshot tests with unicode encoding > should render ASCII text correctly 1`] = `
 "Hello               
                     
                     
@@ -9,7 +9,7 @@ exports[`OptimizedBuffer snapshot tests with unicode encoding should render ASCI
 "
 `;
 
-exports[`OptimizedBuffer snapshot tests with unicode encoding should render emoji text correctly: Emoji text rendering 1`] = `
+snapshot[`OptimizedBuffer > snapshot tests with unicode encoding > should render emoji text correctly 1`] = `
 "Hi 👋 🌍            
                     
                     
@@ -18,7 +18,7 @@ exports[`OptimizedBuffer snapshot tests with unicode encoding should render emoj
 "
 `;
 
-exports[`OptimizedBuffer snapshot tests with unicode encoding should handle multiline text with unicode: Multiline unicode rendering 1`] = `
+snapshot[`OptimizedBuffer > snapshot tests with unicode encoding > should handle multiline text with unicode 1`] = `
 "Hi 世界             
 🌟 Star             
                     

@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach, describe } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer, type MockMouse, MockTreeSitterClient } from "../testing"
 import { ScrollBoxRenderable } from "../renderables/ScrollBox"
 import { BoxRenderable } from "../renderables/Box"
@@ -6,6 +8,7 @@ import { TextRenderable } from "../renderables/Text"
 import { CodeRenderable } from "../renderables/Code"
 import { LinearScrollAccel, MacOSScrollAccel, type ScrollAcceleration } from "../lib/scroll-acceleration"
 import { SyntaxStyle } from "../syntax-style"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 // Test accelerator that returns a constant multiplier
 class ConstantScrollAccel implements ScrollAcceleration {
@@ -38,7 +41,7 @@ afterEach(() => {
 })
 
 describe("ScrollBoxRenderable - child delegation", () => {
-  test("delegates add to content wrapper", () => {
+  test("delegates add to content wrapper", async (t) => {
     const scrollbox = new ScrollBoxRenderable(testRenderer, { id: "scrollbox" })
     const child = new BoxRenderable(testRenderer, { id: "child" })
 
@@ -50,7 +53,7 @@ describe("ScrollBoxRenderable - child delegation", () => {
     expect(child.parent).toBe(scrollbox.content)
   })
 
-  test("delegates remove to content wrapper", () => {
+  test("delegates remove to content wrapper", async (t) => {
     const scrollbox = new ScrollBoxRenderable(testRenderer, { id: "scrollbox" })
     const child = new BoxRenderable(testRenderer, { id: "child" })
 
@@ -61,7 +64,7 @@ describe("ScrollBoxRenderable - child delegation", () => {
     expect(scrollbox.getChildren().length).toBe(0)
   })
 
-  test("delegates insertBefore to content wrapper", () => {
+  test("delegates insertBefore to content wrapper", async (t) => {
     const scrollbox = new ScrollBoxRenderable(testRenderer, { id: "scrollbox" })
     const child1 = new BoxRenderable(testRenderer, { id: "child1" })
     const child2 = new BoxRenderable(testRenderer, { id: "child2" })
@@ -80,7 +83,7 @@ describe("ScrollBoxRenderable - child delegation", () => {
 })
 
 describe("ScrollBoxRenderable - clipping", () => {
-  test("clips nested scrollbox content to inner viewport (see issue #388)", async () => {
+  test("clips nested scrollbox content to inner viewport (see issue #388)", async (t) => {
     const root = new BoxRenderable(testRenderer, {
       flexDirection: "column",
       gap: 0,
@@ -123,7 +126,7 @@ describe("ScrollBoxRenderable - clipping", () => {
 })
 
 describe("ScrollBoxRenderable - destroyRecursively", () => {
-  test("destroys internal ScrollBox components", () => {
+  test("destroys internal ScrollBox components", async (t) => {
     const parent = new ScrollBoxRenderable(testRenderer, { id: "scroll-parent" })
     const child = new BoxRenderable(testRenderer, { id: "child" })
 
@@ -156,7 +159,7 @@ describe("ScrollBoxRenderable - destroyRecursively", () => {
 })
 
 describe("ScrollBoxRenderable - Mouse interaction", () => {
-  test("scrolls with mouse wheel", async () => {
+  test("scrolls with mouse wheel", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -171,7 +174,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(scrollBox.scrollTop).toBeGreaterThan(0)
   })
 
-  test("single isolated scroll has same distance as linear", async () => {
+  test("single isolated scroll has same distance as linear", async (t) => {
     const linearBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -210,7 +213,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(accelBox.scrollTop).toBe(linearDistance)
   })
 
-  test("acceleration makes rapid scrolls cover more distance", async () => {
+  test("acceleration makes rapid scrolls cover more distance", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -236,7 +239,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(rapidScrollDistance).toBeGreaterThan(slowScrollDistance * 3)
   })
 
-  test("multiplier < 1 slows down scroll distance", async () => {
+  test("multiplier < 1 slows down scroll distance", async (t) => {
     // Test with slowdown using a constant multiplier < 1
     const slowdownBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
@@ -289,7 +292,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(slowdownDistance).toBeGreaterThan(0)
   })
 
-  test("multiplier < 1 accumulates fractional scroll amounts", async () => {
+  test("multiplier < 1 accumulates fractional scroll amounts", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -315,7 +318,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(scrollBox.scrollTop).toBeGreaterThan(0)
   })
 
-  test("horizontal scroll with multiplier < 1 works correctly", async () => {
+  test("horizontal scroll with multiplier < 1 works correctly", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -345,7 +348,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
     expect(scrolled).toBe(true)
   })
 
-  test("multiplier < 1 with acceleration work together", async () => {
+  test("multiplier < 1 with acceleration work together", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 50,
       height: 20,
@@ -370,7 +373,7 @@ describe("ScrollBoxRenderable - Mouse interaction", () => {
 })
 
 describe("ScrollBoxRenderable - Content Visibility", () => {
-  test("maintains visibility when scrolling with many Code elements", async () => {
+  test("maintains visibility when scrolling with many Code elements", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const parent = new BoxRenderable(testRenderer, {
@@ -461,7 +464,7 @@ world
     expect(nonWhitespaceChars).toBeGreaterThan(50)
   })
 
-  test("maintains visibility when scrolling with many Code elements (setter-based, like SolidJS)", async () => {
+  test("maintains visibility when scrolling with many Code elements (setter-based, like SolidJS)", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const parent = new BoxRenderable(testRenderer, {
@@ -551,7 +554,7 @@ world
     expect(nonWhitespaceChars).toBeGreaterThan(50)
   })
 
-  test("maintains visibility with simple Code elements (constructor)", async () => {
+  test("maintains visibility with simple Code elements (constructor)", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const parent = new BoxRenderable(testRenderer, {
@@ -620,7 +623,7 @@ world
     expect(nonWhitespaceChars).toBeGreaterThan(18)
   })
 
-  test("maintains visibility with simple Code elements (setter-based, like SolidJS)", async () => {
+  test("maintains visibility with simple Code elements (setter-based, like SolidJS)", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const parent = new BoxRenderable(testRenderer, {
@@ -666,10 +669,10 @@ world
       scrollBox.add(wrapper)
     }
 
-    await Bun.sleep(20)
+    await sleep(20)
 
     mockTreeSitterClient.resolveAllHighlightOnce()
-    await Bun.sleep(20)
+    await sleep(20)
 
     await renderOnce()
 
@@ -688,7 +691,7 @@ world
     expect(nonWhitespaceChars).toBeGreaterThan(18)
   })
 
-  test("maintains visibility with TextRenderable elements", async () => {
+  test("maintains visibility with TextRenderable elements", async (t) => {
     const parent = new BoxRenderable(testRenderer, {
       flexDirection: "column",
       gap: 1,
@@ -739,7 +742,7 @@ world
     expect(nonWhitespaceChars).toBeGreaterThan(20)
   })
 
-  test("stays scrolled to bottom with growing code renderables in sticky scroll mode", async () => {
+  test("stays scrolled to bottom with growing code renderables in sticky scroll mode", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
     // Use auto-resolving mock client to avoid timing issues with stale highlight detection
     const autoResolvingClient = new MockTreeSitterClient({ autoResolveTimeout: 1 })
@@ -783,7 +786,7 @@ world
     wrapper1.add(code1)
     scrollBox.add(wrapper1)
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -798,7 +801,7 @@ function test() {
 }
 console.log(test())`
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -819,7 +822,7 @@ console.log(test())`
     wrapper2.add(code2)
     scrollBox.add(wrapper2)
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -836,7 +839,7 @@ function multiply(a, b) {
 const result = multiply(x, y)
 console.log('Result:', result)`
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -857,7 +860,7 @@ console.log('Result:', result)`
     wrapper3.add(code3)
     scrollBox.add(wrapper3)
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -890,7 +893,7 @@ console.log(processor.process())
 console.log(processor.filter(x => x > 2))
 console.log(processor.reduce((acc, val) => acc + val, 0))`
 
-    await Bun.sleep(10)
+    await sleep(10)
     await testRenderer.idle()
 
     scrollPositions.push(scrollBox.scrollTop)
@@ -918,7 +921,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
     }
   })
 
-  test("sticky scroll bottom stays at bottom after scrollBy/scrollTo is called", async () => {
+  test("sticky scroll bottom stays at bottom after scrollBy/scrollTo is called", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 40,
       height: 10,
@@ -950,7 +953,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
     }
   })
 
-  test("scrolls CodeRenderable with LineNumberRenderable using mouse wheel", async () => {
+  test("scrolls CodeRenderable with LineNumberRenderable using mouse wheel", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
@@ -1003,12 +1006,12 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
 
     // Capture after scroll (should show bottom lines)
     const frameBottom = captureCharFrame()
-    expect(frameBottom).toMatchSnapshot()
+    await assertSnapshot(t, frameBottom)
     expect(frameBottom).toContain("Line 30")
     expect(frameBottom).not.toContain("Line 1")
   })
 
-  test("sticky scroll bottom stays at bottom when gradually filled with code renderables", async () => {
+  test("sticky scroll bottom stays at bottom when gradually filled with code renderables", async (t) => {
     const syntaxStyle = SyntaxStyle.fromTheme([])
 
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
@@ -1057,7 +1060,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
     }
   })
 
-  test("clips nested scrollboxes when multiple stacked children overflow (app-style tool blocks)", async () => {
+  test("clips nested scrollboxes when multiple stacked children overflow (app-style tool blocks)", async (t) => {
     const custom = await createTestRenderer({ width: 120, height: 40 })
     const { renderer, renderOnce, captureCharFrame } = custom
 
@@ -1109,7 +1112,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
     renderer.destroy()
   })
 
-  test("does not overdraw above header when scrolling nested tool blocks upward", async () => {
+  test("does not overdraw above header when scrolling nested tool blocks upward", async (t) => {
     const custom = await createTestRenderer({ width: 120, height: 24 })
     const { renderer, renderOnce, captureCharFrame } = custom
 
@@ -1149,7 +1152,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
   })
 
   // Regression test for issue #530: sticky scroll jumps to top after manual scroll
-  test("resets _hasManualScroll when user scrolls back to sticky position (issue #530)", async () => {
+  test("resets _hasManualScroll when user scrolls back to sticky position (issue #530)", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 40,
       height: 10,
@@ -1197,7 +1200,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
   })
 
   // Regression test for issue #530: edge case when content fits in viewport
-  test("resets _hasManualScroll for stickyStart=bottom when content fits in viewport (issue #530)", async () => {
+  test("resets _hasManualScroll for stickyStart=bottom when content fits in viewport (issue #530)", async (t) => {
     const scrollBox = new ScrollBoxRenderable(testRenderer, {
       width: 40,
       height: 10,
@@ -1211,6 +1214,7 @@ console.log(processor.reduce((acc, val) => acc + val, 0))`
     scrollBox.add(new TextRenderable(testRenderer, { content: "Line 0" }))
     scrollBox.add(new TextRenderable(testRenderer, { content: "Line 1" }))
     await renderOnce()
+    await renderOnce() // warmup: viewport dimensions stabilize after 2 frames
 
     // maxScrollTop should be 0 since content fits
     const maxScroll = Math.max(0, scrollBox.scrollHeight - scrollBox.viewport.height)

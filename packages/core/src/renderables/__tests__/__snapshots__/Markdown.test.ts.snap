@@ -1,0 +1,544 @@
+export const snapshot = {};
+
+snapshot[`global > basic table alignment 1`] = `
+"
+┌───────┬─────┐
+│Name   │Age  │
+│───────│─────│
+│Alice  │30   │
+│───────│─────│
+│Bob    │5    │
+└───────┴─────┘"
+`;
+
+snapshot[`global > table with inline code (backticks) 1`] = `
+"
+┌───────────────┬───────────────┐
+│Command        │Description    │
+│───────────────│───────────────│
+│npm install    │Install deps   │
+│───────────────│───────────────│
+│npm run build  │Build project  │
+│───────────────│───────────────│
+│npm test       │Run tests      │
+└───────────────┴───────────────┘"
+`;
+
+snapshot[`global > table with bold text 1`] = `
+"
+┌────────────────┬────────┐
+│Feature         │Status  │
+│────────────────│────────│
+│Authentication  │Done    │
+│────────────────│────────│
+│API             │WIP     │
+└────────────────┴────────┘"
+`;
+
+snapshot[`global > table with italic text 1`] = `
+"
+┌──────┬───────────┐
+│Item  │Note       │
+│──────│───────────│
+│One   │important  │
+│──────│───────────│
+│Two   │ok         │
+└──────┴───────────┘"
+`;
+
+snapshot[`global > table with mixed formatting 1`] = `
+"
+┌───────┬────────┬────────┐
+│Type   │Value   │Notes   │
+│───────│────────│────────│
+│Bold   │code    │italic  │
+│───────│────────│────────│
+│Plain  │strong  │cmd     │
+└───────┴────────┴────────┘"
+`;
+
+snapshot[`global > table with alignment markers (left, center, right) 1`] = `
+"
+┌───────────┬────────┬───────┐
+│Left       │Center  │Right  │
+│───────────│────────│───────│
+│A          │B       │C      │
+│───────────│────────│───────│
+│Long text  │X       │Y      │
+└───────────┴────────┴───────┘"
+`;
+
+snapshot[`global > table with empty cells 1`] = `
+"
+┌───┬───┐
+│A  │B  │
+│───│───│
+│X  │   │
+│───│───│
+│   │Y  │
+└───┴───┘"
+`;
+
+snapshot[`global > table with long header and short content 1`] = `
+"
+┌─────────────────────────┬───────┐
+│Very Long Column Header  │Short  │
+│─────────────────────────│───────│
+│A                        │B      │
+└─────────────────────────┴───────┘"
+`;
+
+snapshot[`global > table with short header and long content 1`] = `
+"
+┌───────────────────────────┬───────┐
+│X                          │Y      │
+│───────────────────────────│───────│
+│This is very long content  │Short  │
+└───────────────────────────┴───────┘"
+`;
+
+snapshot[`global > table inside code block should NOT be formatted 1`] = `
+"
+| Not | A | Table |
+|---|---|---|
+| Should | Stay | Raw |
+
+┌──────┬───────────┐
+│Real  │Table      │
+│──────│───────────│
+│Is    │Formatted  │
+└──────┴───────────┘"
+`;
+
+snapshot[`global > multiple tables in same document 1`] = `
+"
+┌────────┬───┐
+│Table1  │A  │
+│────────│───│
+│X       │Y  │
+└────────┴───┘
+
+Some text between.
+
+┌──────────────┬────┐
+│Table2        │BB  │
+│──────────────│────│
+│Long content  │Z   │
+└──────────────┴────┘"
+`;
+
+snapshot[`global > table with escaped pipe character 1`] = `
+"
+┌───────────┬──────────┐
+│Command    │Output    │
+│───────────│──────────│
+│echo       │Hello     │
+│───────────│──────────│
+│ls | grep  │Filtered  │
+└───────────┴──────────┘"
+`;
+
+snapshot[`global > table with unicode characters 1`] = `
+"
+┌────────┬──────────┐
+│Emoji   │Name      │
+│────────│──────────│
+│🎉      │Party     │
+│────────│──────────│
+│🚀      │Rocket    │
+│────────│──────────│
+│日本語  │Japanese  │
+└────────┴──────────┘"
+`;
+
+snapshot[`global > table with links 1`] = `
+"
+┌────────┬───────────────────────────┐
+│Name    │Link                       │
+│────────│───────────────────────────│
+│Google  │link (https://google.com)  │
+│────────│───────────────────────────│
+│GitHub  │gh (https://github.com)    │
+└────────┴───────────────────────────┘"
+`;
+
+snapshot[`global > single row table (header + delimiter only) 1`] = `
+"
+| Only | Header |
+|---|---|"
+`;
+
+snapshot[`global > table with many columns 1`] = `
+"
+┌───┬───┬───┬───┬───┐
+│A  │B  │C  │D  │E  │
+│───│───│───│───│───│
+│1  │2  │3  │4  │5  │
+└───┴───┴───┴───┴───┘"
+`;
+
+snapshot[`global > no tables returns original content 1`] = `
+"
+Just a heading
+
+Some paragraph text.
+
+- List item"
+`;
+
+snapshot[`global > table with nested inline formatting 1`] = `
+"
+┌─────────────────────────────────┐
+│Description                      │
+│─────────────────────────────────│
+│This has bold and code together  │
+│─────────────────────────────────│
+│And italic with nested bold      │
+└─────────────────────────────────┘"
+`;
+
+snapshot[`global > conceal=false: table with bold text 1`] = `
+"
+┌────────────────────┬────────┐
+│Feature             │Status  │
+│────────────────────│────────│
+│**Authentication**  │Done    │
+│────────────────────│────────│
+│**API**             │WIP     │
+└────────────────────┴────────┘"
+`;
+
+snapshot[`global > conceal=false: table with inline code 1`] = `
+"
+┌─────────────────┬───────────────┐
+│Command          │Description    │
+│─────────────────│───────────────│
+│\`npm install\`    │Install deps   │
+│─────────────────│───────────────│
+│\`npm run build\`  │Build project  │
+└─────────────────┴───────────────┘"
+`;
+
+snapshot[`global > conceal=false: table with italic text 1`] = `
+"
+┌──────┬─────────────┐
+│Item  │Note         │
+│──────│─────────────│
+│One   │*important*  │
+│──────│─────────────│
+│Two   │*ok*         │
+└──────┴─────────────┘"
+`;
+
+snapshot[`global > conceal=false: table with mixed formatting 1`] = `
+"
+┌──────────┬────────────┬──────────┐
+│Type      │Value       │Notes     │
+│──────────│────────────│──────────│
+│**Bold**  │\`code\`      │*italic*  │
+│──────────│────────────│──────────│
+│Plain     │**strong**  │\`cmd\`     │
+└──────────┴────────────┴──────────┘"
+`;
+
+snapshot[`global > conceal=false: table with unicode characters 1`] = `
+"
+┌────────┬──────────┐
+│Emoji   │Name      │
+│────────│──────────│
+│🎉      │Party     │
+│────────│──────────│
+│🚀      │Rocket    │
+│────────│──────────│
+│日本語  │Japanese  │
+└────────┴──────────┘"
+`;
+
+snapshot[`global > conceal=false: basic table alignment 1`] = `
+"
+┌───────┬─────┐
+│Name   │Age  │
+│───────│─────│
+│Alice  │30   │
+│───────│─────│
+│Bob    │5    │
+└───────┴─────┘"
+`;
+
+snapshot[`global > table with paragraphs before and after 1`] = `
+"
+This is a paragraph before the table.
+
+┌───────┬─────┐
+│Name   │Age  │
+│───────│─────│
+│Alice  │30   │
+└───────┴─────┘
+
+This is a paragraph after the table."
+`;
+
+snapshot[`global > code block with language 1`] = `
+"
+const x = 1;
+console.log(x);"
+`;
+
+snapshot[`global > code block without language 1`] = `
+"
+plain code block
+with multiple lines"
+`;
+
+snapshot[`global > code block mixed with text 1`] = `
+'
+Here is some code:
+
+function hello() {
+  return "world";
+}
+
+And here is more text after.'
+`;
+
+snapshot[`global > multiple code blocks 1`] = `
+'
+First block:
+
+print("hello")
+
+Second block:
+
+fn main() {}'
+`;
+
+snapshot[`global > code block in conceal=false mode 1`] = `
+"
+const x = 1;"
+`;
+
+snapshot[`global > headings h1 through h3 1`] = `
+"
+Heading 1
+
+Heading 2
+
+Heading 3"
+`;
+
+snapshot[`global > headings with conceal=false show markers 1`] = `
+"
+# Heading 1
+
+## Heading 2"
+`;
+
+snapshot[`global > unordered list 1`] = `
+"
+- Item one
+- Item two
+- Item three"
+`;
+
+snapshot[`global > ordered list 1`] = `
+"
+1. First item
+2. Second item
+3. Third item"
+`;
+
+snapshot[`global > list with inline formatting 1`] = `
+"
+- Bold item
+- Italic item
+- Code item"
+`;
+
+snapshot[`global > simple blockquote 1`] = `
+"
+> This is a quote
+spanning multiple lines"
+`;
+
+snapshot[`global > bold text 1`] = `
+"
+This has bold text in it."
+`;
+
+snapshot[`global > italic text 1`] = `
+"
+This has italic text in it."
+`;
+
+snapshot[`global > inline code 1`] = `
+"
+Use console.log() to debug."
+`;
+
+snapshot[`global > mixed inline formatting 1`] = `
+"
+Bold, italic, and code together."
+`;
+
+snapshot[`global > inline formatting with conceal=false 1`] = `
+"
+**Bold**, *italic*, and \`code\` together."
+`;
+
+snapshot[`global > links with conceal mode 1`] = `
+"
+Check out OpenTUI (https://github.com/sst/opentui) for more."
+`;
+
+snapshot[`global > links with conceal=false 1`] = `
+"
+Check out [OpenTUI](https://github.com/sst/opentui) for
+more."
+`;
+
+snapshot[`global > horizontal rule 1`] = `
+"
+Before
+
+---
+
+After"
+`;
+
+snapshot[`global > complex markdown document 1`] = `
+'
+Project Title
+
+Welcome to OpenTUI, a terminal UI library.
+
+Features
+
+- Automatic table alignment
+- inline code support
+- Italic and bold text
+
+
+Code Example
+
+const md = new MarkdownRenderable(ctx, {
+  content: "# Hello",
+})
+
+Links
+
+Visit GitHub (https://github.com) for more.
+
+---
+
+Press ? for help'
+`;
+
+snapshot[`global > custom renderNode can override heading rendering 1`] = `
+"
+[CUSTOM] Custom Heading
+Regular paragraph."
+`;
+
+snapshot[`global > custom renderNode can override code block rendering 1`] = `
+"
+┌──────────────────────────────────────────────────────────┐
+│CODE: const x = 1;                                        │
+└──────────────────────────────────────────────────────────┘"
+`;
+
+snapshot[`global > custom renderNode returning null uses default 1`] = `
+"
+Heading
+
+Paragraph text."
+`;
+
+snapshot[`global > incomplete code block (no closing fence) 1`] = `
+"
+Here is some code:
+
+const x = 1;
+console.log(x);"
+`;
+
+snapshot[`global > incomplete bold (no closing **) 1`] = `
+"
+This has **unclosed bold text"
+`;
+
+snapshot[`global > incomplete italic (no closing *) 1`] = `
+"
+This has *unclosed italic text"
+`;
+
+snapshot[`global > incomplete link (no closing paren) 1`] = `
+"
+Check out [this link](https://example.com (https://example.
+com)"
+`;
+
+snapshot[`global > incomplete table (only header) 1`] = `
+"
+| Header1 | Header2 |"
+`;
+
+snapshot[`global > incomplete table (header + delimiter, no rows) 1`] = `
+"
+| Header1 | Header2 |
+|---|---|"
+`;
+
+snapshot[`global > streaming-like content with partial code block 1`] = `
+"
+Title
+
+Some text before code."
+`;
+
+snapshot[`global > malformed table with missing pipes 1`] = `
+"
+┌───┬───┐
+│A  │B  │
+│───│───│
+│1  │2  │
+└───┴───┘"
+`;
+
+snapshot[`global > trailing blank lines do not add spacing 1`] = `
+"
+Heading
+
+Paragraph text."
+`;
+
+snapshot[`global > multiple trailing blank lines do not add spacing 1`] = `
+"
+First paragraph.
+
+Second paragraph."
+`;
+
+snapshot[`global > blank lines between blocks add spacing 1`] = `
+"
+First
+
+Second
+
+Third"
+`;
+
+snapshot[`global > code block at end with trailing blank lines 1`] = `
+"
+Text before
+
+const x = 1;"
+`;
+
+snapshot[`global > table at end with trailing blank lines 1`] = `
+"
+┌───┬───┐
+│A  │B  │
+│───│───│
+│1  │2  │
+└───┴───┘"
+`;

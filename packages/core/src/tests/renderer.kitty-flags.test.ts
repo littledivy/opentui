@@ -1,4 +1,6 @@
-import { test, expect } from "bun:test"
+import "../testing/test-setup.ts"
+import { test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { buildKittyKeyboardFlags } from "../renderer"
 
 // Kitty Keyboard Protocol progressive enhancement flags

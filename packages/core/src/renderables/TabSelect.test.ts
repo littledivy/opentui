@@ -1,4 +1,6 @@
-import { test, expect, describe, beforeEach, afterEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import {
   TabSelectRenderable,
   type TabSelectRenderableOptions,

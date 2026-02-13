@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { DiffRenderable } from "./Diff"
 import { SyntaxStyle } from "../syntax-style"
 import { RGBA } from "../lib/RGBA"
@@ -84,7 +86,7 @@ test("DiffRenderable - no endless loop when concealing markdown formatting", asy
   diffRenderable.wrapMode = "word"
 
   await renderOnce()
-  await Bun.sleep(2000)
+  await sleep(2000)
 
   const stats = currentRenderer.getStats()
   expect(stats.frameCount).toBeLessThan(25)
@@ -154,7 +156,7 @@ test("DiffRenderable - line number alignment and gutter heights in split view wi
 
   diffRenderable.wrapMode = "word"
   await currentRenderer.idle()
-  await Bun.sleep(200)
+  await sleep(200)
   const splitWrapFrame = captureFrame()
 
   const diffChildren = diffRenderable.getChildren()
@@ -194,7 +196,7 @@ test("DiffRenderable - line number alignment and gutter heights in split view wi
   await renderOnce()
   diffRenderable.wrapMode = "word"
   await renderOnce()
-  await Bun.sleep(200) // Give time for highlight rebuild
+  await sleep(200) // Give time for highlight rebuild
   await renderOnce()
   const splitWrapFrame2 = captureFrame()
   const lines2 = splitWrapFrame2.split("\n")

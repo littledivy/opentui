@@ -14,7 +14,7 @@
  * Call the `process()` method to feed input data.
  */
 
-import { EventEmitter } from "events"
+import { EventEmitter } from "node:events"
 
 const ESC = "\x1b"
 const BRACKETED_PASTE_START = "\x1b[200~"

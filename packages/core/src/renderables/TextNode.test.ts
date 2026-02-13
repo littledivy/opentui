@@ -1,4 +1,6 @@
-import { describe, expect, it } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TextNodeRenderable, isTextNodeRenderable } from "./TextNode"
 import { RGBA } from "../lib/RGBA"
 import { StyledText, red, bold, t } from "../lib/styled-text"

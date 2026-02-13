@@ -1,6 +1,9 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test"
+import "./testing/test-setup.ts"
+import { describe, it, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { OptimizedBuffer } from "./buffer"
 import { RGBA } from "./lib/RGBA"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 describe("OptimizedBuffer", () => {
   let buffer: OptimizedBuffer
@@ -14,7 +17,7 @@ describe("OptimizedBuffer", () => {
   })
 
   describe("encodeUnicode", () => {
-    it("should encode simple ASCII text", () => {
+    it("should encode simple ASCII text", async (t) => {
       const encoded = buffer.encodeUnicode("Hello")
       expect(encoded).not.toBeNull()
       expect(encoded!.data.length).toBe(5)
@@ -27,7 +30,7 @@ describe("OptimizedBuffer", () => {
       buffer.freeUnicode(encoded!)
     })
 
-    it("should encode emoji with correct width", () => {
+    it("should encode emoji with correct width", async (t) => {
       const encoded = buffer.encodeUnicode("👋")
       expect(encoded).not.toBeNull()
       expect(encoded!.data.length).toBe(1)
@@ -38,7 +41,7 @@ describe("OptimizedBuffer", () => {
       buffer.freeUnicode(encoded!)
     })
 
-    it("should encode mixed ASCII and emoji", () => {
+    it("should encode mixed ASCII and emoji", async (t) => {
       const encoded = buffer.encodeUnicode("Hi 👋 World")
       expect(encoded).not.toBeNull()
       expect(encoded!.data.length).toBe(10) // H, i, space, emoji, space, W, o, r, l, d
@@ -54,7 +57,7 @@ describe("OptimizedBuffer", () => {
       buffer.freeUnicode(encoded!)
     })
 
-    it("should handle empty string", () => {
+    it("should handle empty string", async (t) => {
       const encoded = buffer.encodeUnicode("")
       expect(encoded).not.toBeNull()
       expect(encoded!.data.length).toBe(0)
@@ -62,7 +65,7 @@ describe("OptimizedBuffer", () => {
       buffer.freeUnicode(encoded!)
     })
 
-    it("should encode monkey emoji frames and draw in a line", () => {
+    it("should encode monkey emoji frames and draw in a line", async (t) => {
       const frames = ["🙈 ", "🙈 ", "🙉 ", "🙊 "]
       const fg = RGBA.fromValues(1, 1, 1, 1)
       const bg = RGBA.fromValues(0, 0, 0, 1)
@@ -91,7 +94,7 @@ describe("OptimizedBuffer", () => {
   })
 
   describe("drawChar", () => {
-    it("should draw a simple ASCII character", () => {
+    it("should draw a simple ASCII character", async (t) => {
       const fg = RGBA.fromValues(1, 1, 1, 1)
       const bg = RGBA.fromValues(0, 0, 0, 1)
 
@@ -101,7 +104,7 @@ describe("OptimizedBuffer", () => {
       expect(chars[0]).toBe(72)
     })
 
-    it("should draw encoded characters from encodeUnicode", () => {
+    it("should draw encoded characters from encodeUnicode", async (t) => {
       const encoded = buffer.encodeUnicode("Hello")
       expect(encoded).not.toBeNull()
 
@@ -121,7 +124,7 @@ describe("OptimizedBuffer", () => {
       buffer.freeUnicode(encoded!)
     })
 
-    it("should draw emoji using encoded char", () => {
+    it("should draw emoji using encoded char", async (t) => {
       const encoded = buffer.encodeUnicode("👋")
       expect(encoded).not.toBeNull()
 
@@ -139,7 +142,7 @@ describe("OptimizedBuffer", () => {
   })
 
   describe("snapshot tests with unicode encoding", () => {
-    it("should render ASCII text correctly", () => {
+    it("should render ASCII text correctly", async (t) => {
       buffer.clear(RGBA.fromValues(0, 0, 0, 1))
 
       const encoded = buffer.encodeUnicode("Hello")
@@ -156,12 +159,12 @@ describe("OptimizedBuffer", () => {
 
       const frameBytes = buffer.getRealCharBytes(true)
       const frameText = new TextDecoder().decode(frameBytes)
-      expect(frameText).toMatchSnapshot("ASCII text rendering")
+      await assertSnapshot(t, frameText)
 
       buffer.freeUnicode(encoded!)
     })
 
-    it("should render emoji text correctly", () => {
+    it("should render emoji text correctly", async (t) => {
       buffer.clear(RGBA.fromValues(0, 0, 0, 1))
 
       const encoded = buffer.encodeUnicode("Hi 👋 🌍")
@@ -178,12 +181,12 @@ describe("OptimizedBuffer", () => {
 
       const frameBytes = buffer.getRealCharBytes(true)
       const frameText = new TextDecoder().decode(frameBytes)
-      expect(frameText).toMatchSnapshot("Emoji text rendering")
+      await assertSnapshot(t, frameText)
 
       buffer.freeUnicode(encoded!)
     })
 
-    it("should handle multiline text with unicode", () => {
+    it("should handle multiline text with unicode", async (t) => {
       buffer.clear(RGBA.fromValues(0, 0, 0, 1))
 
       const lines = ["Hi 世界", "🌟 Star"]
@@ -205,10 +208,10 @@ describe("OptimizedBuffer", () => {
 
       const frameBytes = buffer.getRealCharBytes(true)
       const frameText = new TextDecoder().decode(frameBytes)
-      expect(frameText).toMatchSnapshot("Multiline unicode rendering")
+      await assertSnapshot(t, frameText)
     })
 
-    it("should respect character widths in positioning", () => {
+    it("should respect character widths in positioning", async (t) => {
       const encoded = buffer.encodeUnicode("A👋B")
       expect(encoded).not.toBeNull()
 
@@ -229,7 +232,7 @@ describe("OptimizedBuffer", () => {
   })
 
   describe("drawChar with alpha blending", () => {
-    it("should blend semi-transparent foreground", () => {
+    it("should blend semi-transparent foreground", async (t) => {
       const fg = RGBA.fromValues(1, 0, 0, 0.5)
       const bg = RGBA.fromValues(0, 0, 0, 1)
 
@@ -240,7 +243,7 @@ describe("OptimizedBuffer", () => {
       expect(fgBuffer[0]).toBeLessThan(1.0)
     })
 
-    it("should blend semi-transparent background", () => {
+    it("should blend semi-transparent background", async (t) => {
       buffer.setRespectAlpha(true)
 
       const fg = RGBA.fromValues(1, 1, 1, 1)

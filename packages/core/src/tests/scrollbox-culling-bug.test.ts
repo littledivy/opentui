@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../testing"
 import { ScrollBoxRenderable } from "../renderables/ScrollBox"
 import { BoxRenderable } from "../renderables/Box"
@@ -54,7 +56,7 @@ test("scrollbox culling issue: last item not visible in frame after content grow
     item.add(text)
 
     scrollBox.add(item)
-    await Bun.sleep(10)
+    await sleep(10)
   }
 
   await testRenderer.idle()

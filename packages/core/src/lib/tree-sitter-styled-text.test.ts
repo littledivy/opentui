@@ -1,12 +1,14 @@
-import { test, expect, beforeAll, afterAll, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeAll, afterAll, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TreeSitterClient } from "./tree-sitter/client"
 import { treeSitterToStyledText, treeSitterToTextChunks } from "./tree-sitter-styled-text"
 import { SyntaxStyle } from "../syntax-style"
 import { RGBA } from "./RGBA"
 import { createTextAttributes } from "../utils"
-import { tmpdir } from "os"
-import { join } from "path"
-import { mkdir } from "fs/promises"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { mkdir } from "node:fs/promises"
 import type { SimpleHighlight } from "./tree-sitter/types"
 
 describe("TreeSitter Styled Text", () => {

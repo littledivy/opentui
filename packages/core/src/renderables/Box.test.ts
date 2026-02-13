@@ -1,20 +1,23 @@
-import { test, expect, describe, beforeEach, afterEach, spyOn } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
+import { stub, type Stub } from "jsr:@std/testing/mock"
 import { BoxRenderable, type BoxOptions } from "./Box"
 import { createTestRenderer, type TestRenderer } from "../testing/test-renderer"
 import type { BorderStyle } from "../lib/border"
 
 let testRenderer: TestRenderer
 let renderOnce: () => Promise<void>
-let warnSpy: ReturnType<typeof spyOn>
+let warnSpy: Stub<Console>
 
 beforeEach(async () => {
   ;({ renderer: testRenderer, renderOnce } = await createTestRenderer({}))
-  warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+  warnSpy = stub(console, "warn", () => {})
 })
 
 afterEach(() => {
   testRenderer.destroy()
-  warnSpy.mockRestore()
+  warnSpy.restore()
 })
 
 describe("BoxRenderable - focusable option", () => {
@@ -119,9 +122,8 @@ describe("BoxRenderable - borderStyle validation", () => {
   })
 
   describe("valid borderStyle values work correctly", () => {
-    test.each(["single", "double", "rounded", "heavy"] as BorderStyle[])(
-      "accepts valid borderStyle '%s' in constructor",
-      async (style) => {
+    for (const style of ["single", "double", "rounded", "heavy"] as BorderStyle[]) {
+      test(`accepts valid borderStyle '${style}' in constructor`, async () => {
         const box = new BoxRenderable(testRenderer, {
           id: "test-box",
           borderStyle: style,
@@ -134,12 +136,11 @@ describe("BoxRenderable - borderStyle validation", () => {
         await renderOnce()
 
         expect(box.borderStyle).toBe(style)
-      },
-    )
+      })
+    }
 
-    test.each(["single", "double", "rounded", "heavy"] as BorderStyle[])(
-      "accepts valid borderStyle '%s' via setter",
-      async (style) => {
+    for (const style of ["single", "double", "rounded", "heavy"] as BorderStyle[]) {
+      test(`accepts valid borderStyle '${style}' via setter`, async () => {
         const box = new BoxRenderable(testRenderer, {
           id: "test-box",
           border: true,
@@ -154,7 +155,7 @@ describe("BoxRenderable - borderStyle validation", () => {
         await renderOnce()
 
         expect(box.borderStyle).toBe(style)
-      },
-    )
+      })
+    }
   })
 })

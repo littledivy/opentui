@@ -1,7 +1,7 @@
 import { Parser, Query, Tree, Language } from "web-tree-sitter"
 import type { Edit, QueryCapture, Range } from "web-tree-sitter"
-import { mkdir } from "fs/promises"
-import * as path from "path"
+import { mkdir } from "node:fs/promises"
+import * as path from "node:path"
 import type {
   HighlightRange,
   HighlightResponse,
@@ -11,7 +11,7 @@ import type {
   InjectionMapping,
 } from "./types"
 import { DownloadUtils } from "./download-utils"
-import { isMainThread } from "worker_threads"
+import { isMainThread } from "node:worker_threads"
 import { isBunfsPath, normalizeBunfsPath } from "../bunfs"
 
 const self = globalThis
@@ -88,12 +88,20 @@ class ParserWorker {
         await mkdir(path.join(this.tsDataPath, "languages"), { recursive: true })
         await mkdir(path.join(this.tsDataPath, "queries"), { recursive: true })
 
-        let { default: treeWasm } = await import("web-tree-sitter/tree-sitter.wasm" as string, {
-          with: { type: "wasm" },
-        })
-
-        if (isBunfsPath(treeWasm)) {
-          treeWasm = normalizeBunfsPath(path.parse(treeWasm).base)
+        let treeWasm: string
+        try {
+          // Deno: resolve the wasm file path via import.meta.resolve
+          const wasmUrl = import.meta.resolve("web-tree-sitter/tree-sitter.wasm")
+          treeWasm = wasmUrl.startsWith("file://") ? new URL(wasmUrl).pathname : wasmUrl
+        } catch {
+          // Fallback: Bun import with type assertion
+          const mod = await import("web-tree-sitter/tree-sitter.wasm" as string, {
+            with: { type: "wasm" },
+          })
+          treeWasm = mod.default
+          if (isBunfsPath(treeWasm)) {
+            treeWasm = normalizeBunfsPath(path.parse(treeWasm).base)
+          }
         }
 
         await Parser.init({

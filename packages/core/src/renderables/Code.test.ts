@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { CodeRenderable } from "./Code"
 import { SyntaxStyle } from "../syntax-style"
 import { RGBA } from "../lib/RGBA"
@@ -6,6 +8,7 @@ import { createTestRenderer, type TestRenderer, MockTreeSitterClient, type MockM
 import { TreeSitterClient } from "../lib/tree-sitter"
 import type { SimpleHighlight } from "../lib/tree-sitter/types"
 import { BoxRenderable } from "./Box"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -28,7 +31,7 @@ afterEach(async () => {
   }
 })
 
-test("CodeRenderable - basic construction", async () => {
+test("CodeRenderable - basic construction", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -48,7 +51,7 @@ test("CodeRenderable - basic construction", async () => {
   expect(codeRenderable.syntaxStyle).toBe(syntaxStyle)
 })
 
-test("CodeRenderable - content updates", async () => {
+test("CodeRenderable - content updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -67,7 +70,7 @@ test("CodeRenderable - content updates", async () => {
   expect(codeRenderable.content).toBe("updated content")
 })
 
-test("CodeRenderable - filetype updates", async () => {
+test("CodeRenderable - filetype updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -86,7 +89,7 @@ test("CodeRenderable - filetype updates", async () => {
   expect(codeRenderable.filetype).toBe("typescript")
 })
 
-test("CodeRenderable - re-highlights when content changes during active highlighting", async () => {
+test("CodeRenderable - re-highlights when content changes during active highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -132,7 +135,7 @@ test("CodeRenderable - re-highlights when content changes during active highligh
   expect(mockClient.isHighlighting()).toBe(false)
 })
 
-test("CodeRenderable - multiple content changes during highlighting", async () => {
+test("CodeRenderable - multiple content changes during highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -175,7 +178,7 @@ test("CodeRenderable - multiple content changes during highlighting", async () =
   expect(mockClient.isHighlighting()).toBe(false)
 })
 
-test("CodeRenderable - uses fallback rendering when no filetype provided", async () => {
+test("CodeRenderable - uses fallback rendering when no filetype provided", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -195,7 +198,7 @@ test("CodeRenderable - uses fallback rendering when no filetype provided", async
   expect(codeRenderable.plainText).toBe("const message = 'hello world';")
 })
 
-test("CodeRenderable - uses fallback rendering when highlighting throws error", async () => {
+test("CodeRenderable - uses fallback rendering when highlighting throws error", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -226,7 +229,7 @@ test("CodeRenderable - uses fallback rendering when highlighting throws error", 
   expect(codeRenderable.plainText).toBe("const message = 'hello world';")
 })
 
-test("CodeRenderable - handles empty content", async () => {
+test("CodeRenderable - handles empty content", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -246,7 +249,7 @@ test("CodeRenderable - handles empty content", async () => {
   expect(codeRenderable.plainText).toBe("")
 })
 
-test("CodeRenderable - empty content does not trigger highlighting", async () => {
+test("CodeRenderable - empty content does not trigger highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -280,7 +283,7 @@ test("CodeRenderable - empty content does not trigger highlighting", async () =>
   expect(codeRenderable.content).toBe("")
 })
 
-test("CodeRenderable - text renders immediately before highlighting completes", async () => {
+test("CodeRenderable - text renders immediately before highlighting completes", async (t) => {
   resize(32, 2)
 
   const syntaxStyle = SyntaxStyle.fromStyles({
@@ -313,17 +316,17 @@ test("CodeRenderable - text renders immediately before highlighting completes", 
   expect(mockClient.isHighlighting()).toBe(true)
 
   const frameBeforeHighlighting = captureFrame()
-  expect(frameBeforeHighlighting).toMatchSnapshot("text visible before highlighting completes")
+  await assertSnapshot(t, frameBeforeHighlighting)
 
   mockClient.resolveHighlightOnce(0)
   await new Promise((resolve) => setTimeout(resolve, 10))
   await renderOnce()
 
   const frameAfterHighlighting = captureFrame()
-  expect(frameAfterHighlighting).toMatchSnapshot("text visible after highlighting completes")
+  await assertSnapshot(t, frameAfterHighlighting)
 })
 
-test("CodeRenderable - batches concurrent content and filetype updates", async () => {
+test("CodeRenderable - batches concurrent content and filetype updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -372,7 +375,7 @@ test("CodeRenderable - batches concurrent content and filetype updates", async (
   expect(codeRenderable.filetype).toBe("typescript")
 })
 
-test("CodeRenderable - batches multiple updates in same tick into single highlight", async () => {
+test("CodeRenderable - batches multiple updates in same tick into single highlight", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -422,7 +425,7 @@ test("CodeRenderable - batches multiple updates in same tick into single highlig
   expect(highlightCalls[0]?.filetype).toBe("typescript")
 })
 
-test("CodeRenderable - renders markdown with TypeScript injection correctly", async () => {
+test("CodeRenderable - renders markdown with TypeScript injection correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(1, 0, 0, 1) }, // Red
@@ -453,7 +456,7 @@ test("CodeRenderable - renders markdown with TypeScript injection correctly", as
   expect(codeRenderable.plainText).toContain("typescript")
 })
 
-test("CodeRenderable - continues highlighting after unresolved promise", async () => {
+test("CodeRenderable - continues highlighting after unresolved promise", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -538,7 +541,7 @@ test("CodeRenderable - continues highlighting after unresolved promise", async (
   expect(highlightCount).toBe(5)
 })
 
-test("CodeRenderable - concealment is enabled by default", async () => {
+test("CodeRenderable - concealment is enabled by default", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -553,7 +556,7 @@ test("CodeRenderable - concealment is enabled by default", async () => {
   expect(codeRenderable.conceal).toBe(true)
 })
 
-test("CodeRenderable - concealment can be disabled explicitly", async () => {
+test("CodeRenderable - concealment can be disabled explicitly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -569,7 +572,7 @@ test("CodeRenderable - concealment can be disabled explicitly", async () => {
   expect(codeRenderable.conceal).toBe(false)
 })
 
-test("CodeRenderable - applies concealment to styled text", async () => {
+test("CodeRenderable - applies concealment to styled text", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -602,7 +605,7 @@ test("CodeRenderable - applies concealment to styled text", async () => {
   expect(codeRenderable.content).toBe("const message = 'hello';")
 })
 
-test("CodeRenderable - updating conceal triggers re-highlighting", async () => {
+test("CodeRenderable - updating conceal triggers re-highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -637,7 +640,7 @@ test("CodeRenderable - updating conceal triggers re-highlighting", async () => {
   await new Promise((resolve) => setTimeout(resolve, 10))
 })
 
-test("CodeRenderable - drawUnstyledText is true by default", async () => {
+test("CodeRenderable - drawUnstyledText is true by default", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -652,7 +655,7 @@ test("CodeRenderable - drawUnstyledText is true by default", async () => {
   expect(codeRenderable.drawUnstyledText).toBe(true)
 })
 
-test("CodeRenderable - drawUnstyledText can be set to false", async () => {
+test("CodeRenderable - drawUnstyledText can be set to false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -668,7 +671,7 @@ test("CodeRenderable - drawUnstyledText can be set to false", async () => {
   expect(codeRenderable.drawUnstyledText).toBe(false)
 })
 
-test("CodeRenderable - with drawUnstyledText=true, text renders before highlighting", async () => {
+test("CodeRenderable - with drawUnstyledText=true, text renders before highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -704,7 +707,7 @@ test("CodeRenderable - with drawUnstyledText=true, text renders before highlight
   expect(codeRenderable.plainText).toBe("const message = 'hello';")
 })
 
-test("CodeRenderable - with drawUnstyledText=false, text does not render before highlighting but lineCount is correct", async () => {
+test("CodeRenderable - with drawUnstyledText=false, text does not render before highlighting but lineCount is correct", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -746,7 +749,7 @@ test("CodeRenderable - with drawUnstyledText=false, text does not render before 
   expect(frameAfterHighlighting).toContain("const message")
 })
 
-test("CodeRenderable - updating drawUnstyledText from false to true triggers re-highlighting", async () => {
+test("CodeRenderable - updating drawUnstyledText from false to true triggers re-highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -792,7 +795,7 @@ test("CodeRenderable - updating drawUnstyledText from false to true triggers re-
   expect(codeRenderable.plainText).toBe("const message = 'hello';")
 })
 
-test("CodeRenderable - updating drawUnstyledText from true to false triggers re-highlighting", async () => {
+test("CodeRenderable - updating drawUnstyledText from true to false triggers re-highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -827,7 +830,7 @@ test("CodeRenderable - updating drawUnstyledText from true to false triggers re-
   await new Promise((resolve) => setTimeout(resolve, 10))
 })
 
-test("CodeRenderable - uses fallback rendering on error even with drawUnstyledText=false", async () => {
+test("CodeRenderable - uses fallback rendering on error even with drawUnstyledText=false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -857,7 +860,7 @@ test("CodeRenderable - uses fallback rendering on error even with drawUnstyledTe
   expect(codeRenderable.plainText).toBe("const message = 'hello world';")
 })
 
-test("CodeRenderable - with drawUnstyledText=false and no filetype, fallback is used", async () => {
+test("CodeRenderable - with drawUnstyledText=false and no filetype, fallback is used", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -879,7 +882,7 @@ test("CodeRenderable - with drawUnstyledText=false and no filetype, fallback is 
   expect(codeRenderable.plainText).toBe("const message = 'hello world';")
 })
 
-test("CodeRenderable - with drawUnstyledText=false, multiple updates only render final highlighted text", async () => {
+test("CodeRenderable - with drawUnstyledText=false, multiple updates only render final highlighted text", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1015,7 +1018,7 @@ console.log(message);
   expect(plainText).toContain("const message = greet")
 })
 
-test("CodeRenderable - streaming option is false by default", async () => {
+test("CodeRenderable - streaming option is false by default", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1030,7 +1033,7 @@ test("CodeRenderable - streaming option is false by default", async () => {
   expect(codeRenderable.streaming).toBe(false)
 })
 
-test("CodeRenderable - streaming can be enabled", async () => {
+test("CodeRenderable - streaming can be enabled", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1046,7 +1049,7 @@ test("CodeRenderable - streaming can be enabled", async () => {
   expect(codeRenderable.streaming).toBe(true)
 })
 
-test("CodeRenderable - streaming mode respects drawUnstyledText only for initial content", async () => {
+test("CodeRenderable - streaming mode respects drawUnstyledText only for initial content", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1083,7 +1086,7 @@ test("CodeRenderable - streaming mode respects drawUnstyledText only for initial
   expect(codeRenderable.content).toBe("const updated = 'world';")
 })
 
-test("CodeRenderable - streaming mode with drawUnstyledText=false waits for new highlights", async () => {
+test("CodeRenderable - streaming mode with drawUnstyledText=false waits for new highlights", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1109,21 +1112,21 @@ test("CodeRenderable - streaming mode with drawUnstyledText=false waits for new 
   currentRenderer.root.add(codeRenderable)
   currentRenderer.start()
 
-  await Bun.sleep(30)
+  await sleep(30)
 
   expect(codeRenderable.plainText).toBe("const initial = 'hello';")
 
   codeRenderable.content = "const updated = 'world';"
   expect(codeRenderable.plainText).toBe("const initial = 'hello';")
 
-  await Bun.sleep(30)
+  await sleep(30)
 
   expect(codeRenderable.plainText).toBe("const updated = 'world';")
 
   currentRenderer.stop()
 })
 
-test("CodeRenderable - onHighlight callback receives highlights and context", async () => {
+test("CodeRenderable - onHighlight callback receives highlights and context", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1168,7 +1171,7 @@ test("CodeRenderable - onHighlight callback receives highlights and context", as
   expect(receivedContext?.syntaxStyle).toBe(syntaxStyle)
 })
 
-test("CodeRenderable - onHighlight callback can add custom highlights", async () => {
+test("CodeRenderable - onHighlight callback can add custom highlights", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1216,7 +1219,7 @@ test("CodeRenderable - onHighlight callback can add custom highlights", async ()
   expect(customHighlight).toBeDefined()
 })
 
-test("CodeRenderable - onHighlight callback returning undefined uses original highlights", async () => {
+test("CodeRenderable - onHighlight callback returning undefined uses original highlights", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1252,7 +1255,7 @@ test("CodeRenderable - onHighlight callback returning undefined uses original hi
   expect(codeRenderable.plainText).toBe("const message = 'hello';")
 })
 
-test("CodeRenderable - onHighlight callback is called on re-highlighting when content changes", async () => {
+test("CodeRenderable - onHighlight callback is called on re-highlighting when content changes", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1296,7 +1299,7 @@ test("CodeRenderable - onHighlight callback is called on re-highlighting when co
   expect(callbackCount).toBe(2)
 })
 
-test("CodeRenderable - onHighlight callback supports async functions", async () => {
+test("CodeRenderable - onHighlight callback supports async functions", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1344,7 +1347,7 @@ test("CodeRenderable - onHighlight callback supports async functions", async () 
   expect(asyncHighlight).toBeDefined()
 })
 
-test("CodeRenderable - streaming mode caches highlights between updates", async () => {
+test("CodeRenderable - streaming mode caches highlights between updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1386,7 +1389,7 @@ test("CodeRenderable - streaming mode caches highlights between updates", async 
   expect(codeRenderable.plainText).toBe("const final = 'done';")
 })
 
-test("CodeRenderable - streaming mode works with large content updates", async () => {
+test("CodeRenderable - streaming mode works with large content updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1433,7 +1436,7 @@ test("CodeRenderable - streaming mode works with large content updates", async (
   expect(codeRenderable.plainText).toContain("const var9 = 9;")
 })
 
-test("CodeRenderable - disabling streaming clears cached highlights", async () => {
+test("CodeRenderable - disabling streaming clears cached highlights", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1469,7 +1472,7 @@ test("CodeRenderable - disabling streaming clears cached highlights", async () =
   expect(mockClient.isHighlighting()).toBe(true)
 })
 
-test("CodeRenderable - streaming mode with drawUnstyledText=false shows nothing initially", async () => {
+test("CodeRenderable - streaming mode with drawUnstyledText=false shows nothing initially", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1506,7 +1509,7 @@ test("CodeRenderable - streaming mode with drawUnstyledText=false shows nothing 
   expect(frameAfterHighlighting).toContain("const initial")
 })
 
-test("CodeRenderable - streaming mode handles empty cached highlights gracefully", async () => {
+test("CodeRenderable - streaming mode handles empty cached highlights gracefully", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1539,7 +1542,7 @@ test("CodeRenderable - streaming mode handles empty cached highlights gracefully
   expect(codeRenderable.plainText).toBe("more plain text")
 })
 
-test("CodeRenderable - selection across two Code renderables in flex row", async () => {
+test("CodeRenderable - selection across two Code renderables in flex row", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1611,7 +1614,7 @@ test("CodeRenderable - selection across two Code renderables in flex row", async
   }
 })
 
-test("CodeRenderable - content update during async highlighting does not get overwritten by stale highlight result", async () => {
+test("CodeRenderable - content update during async highlighting does not get overwritten by stale highlight result", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(0, 0, 1, 1) },
@@ -1660,7 +1663,7 @@ test("CodeRenderable - content update during async highlighting does not get ove
   expect(codeRenderable.plainText).toBe("line1\nline2\nline3\nline4\nline5")
 })
 
-test("CodeRenderable - lineCount is correct immediately with drawUnstyledText=false", async () => {
+test("CodeRenderable - lineCount is correct immediately with drawUnstyledText=false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1698,7 +1701,7 @@ test("CodeRenderable - lineCount is correct immediately with drawUnstyledText=fa
   expect(frameAfterHighlighting).toContain("line1")
 })
 
-test("CodeRenderable - lineCount updates correctly when content changes with drawUnstyledText=false", async () => {
+test("CodeRenderable - lineCount updates correctly when content changes with drawUnstyledText=false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1733,7 +1736,7 @@ test("CodeRenderable - lineCount updates correctly when content changes with dra
   expect(codeRenderable.lineCount).toBe(2)
 })
 
-test("CodeRenderable - lineInfo is accessible with drawUnstyledText=false before highlighting", async () => {
+test("CodeRenderable - lineInfo is accessible with drawUnstyledText=false before highlighting", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1769,7 +1772,7 @@ test("CodeRenderable - lineInfo is accessible with drawUnstyledText=false before
   expect(codeRenderable.lineInfo.lineSources.length).toBe(3)
 })
 
-test("CodeRenderable - plainText reflects content immediately with drawUnstyledText=false", async () => {
+test("CodeRenderable - plainText reflects content immediately with drawUnstyledText=false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1810,7 +1813,7 @@ test("CodeRenderable - plainText reflects content immediately with drawUnstyledT
   expect(finalFrame).toContain("updated content")
 })
 
-test("CodeRenderable - textLength is correct with drawUnstyledText=false", async () => {
+test("CodeRenderable - textLength is correct with drawUnstyledText=false", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1840,7 +1843,7 @@ test("CodeRenderable - textLength is correct with drawUnstyledText=false", async
   expect(codeRenderable.textLength).toBe(newContent.length)
 })
 
-test("CodeRenderable - streaming mode with drawUnstyledText=false has correct lineCount", async () => {
+test("CodeRenderable - streaming mode with drawUnstyledText=false has correct lineCount", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1888,7 +1891,7 @@ test("CodeRenderable - streaming mode with drawUnstyledText=false has correct li
   expect(finalFrame).toContain("line1")
 })
 
-test("CodeRenderable - streaming with conceal and drawUnstyledText=false should not jump when fenced code blocks are concealed", async () => {
+test("CodeRenderable - streaming with conceal and drawUnstyledText=false should not jump when fenced code blocks are concealed", async (t) => {
   resize(80, 20)
 
   const syntaxStyle = SyntaxStyle.fromStyles({
@@ -1988,7 +1991,7 @@ test("CodeRenderable - streaming with conceal and drawUnstyledText=false should 
   expect(finalFrameText).not.toContain("```")
 })
 
-test("CodeRenderable - streaming with drawUnstyledText=false falls back to unstyled text when highlights fail", async () => {
+test("CodeRenderable - streaming with drawUnstyledText=false falls back to unstyled text when highlights fail", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2010,7 +2013,7 @@ test("CodeRenderable - streaming with drawUnstyledText=false falls back to unsty
   currentRenderer.root.add(codeRenderable)
   currentRenderer.start()
 
-  await Bun.sleep(30)
+  await sleep(30)
 
   mockClient.highlightOnce = async () => {
     throw new Error("Highlighting failed")
@@ -2018,7 +2021,7 @@ test("CodeRenderable - streaming with drawUnstyledText=false falls back to unsty
 
   codeRenderable.content = "const updated = 'world';"
 
-  await Bun.sleep(30)
+  await sleep(30)
 
   expect(codeRenderable.plainText).toBe("const updated = 'world';")
 

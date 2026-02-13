@@ -1,4 +1,7 @@
-import { test, expect, describe, mock, beforeEach } from "bun:test"
+import "./testing/test-setup.ts"
+import { test, describe, beforeEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
+import { fn as mock } from "jsr:@std/expect/fn"
 import { TerminalConsole, ConsolePosition } from "./console"
 import { MouseEvent } from "./renderer"
 
@@ -344,7 +347,7 @@ describe("TerminalConsole", () => {
       terminalConsole["handleKeyPress"]({ name: "c", ctrl: true, shift: true, meta: false } as any)
       expect(onCopy).toHaveBeenCalledWith("Test")
       expect(terminalConsole["hasSelection"]()).toBe(false) // Selection cleared after copy
-      onCopy.mockClear()
+      ;(onCopy as any)[Symbol.for("@MOCK")].calls.length = 0
 
       // Test custom binding (Ctrl+Y) also works
       terminalConsole["_selectionStart"] = { line: 0, col: 0 }

@@ -1,4 +1,6 @@
-import { describe, expect, it } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TextBuffer } from "../text-buffer"
 import { TextBufferView } from "../text-buffer-view"
 import { stringToStyledText } from "../lib/styled-text"

@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, test, beforeEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { MouseParser, type RawMouseEvent } from "./parse.mouse"
 
 // Encode a basic/X10 mouse event: ESC [ M Cb Cx Cy

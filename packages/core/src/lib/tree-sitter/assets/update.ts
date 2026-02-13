@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
-import { readFile, writeFile, mkdir } from "fs/promises"
-import * as path from "path"
+import { readFile, writeFile, mkdir } from "node:fs/promises"
+import * as path from "node:path"
 import { DownloadUtils } from "../download-utils"
-import { parseArgs } from "util"
+import { parseArgs } from "node:util"
 import type { FiletypeParserOptions } from "../types"
-import { readdir } from "fs/promises"
+import { readdir } from "node:fs/promises"
 
 interface ParsersConfig {
   parsers: FiletypeParserOptions[]
@@ -190,8 +190,8 @@ ${queriesLines.join("\n")}
 // Last generated: ${new Date().toISOString()}
 
 import type { FiletypeParserOptions } from "./types"
-import { resolve, dirname } from "path"
-import { fileURLToPath } from "url"
+import { resolve, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
 
 ${imports}
 

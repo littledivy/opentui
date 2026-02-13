@@ -1,4 +1,6 @@
-import { test, expect, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { getObjectsInViewport } from "./objects-in-viewport"
 import type { ViewportBounds } from "../types"
 

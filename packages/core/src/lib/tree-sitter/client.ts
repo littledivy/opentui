@@ -1,4 +1,4 @@
-import { EventEmitter } from "events"
+import { EventEmitter } from "node:events"
 import { createDebounce, clearDebounceScope, DebounceController } from "../debounce"
 import { ProcessQueue } from "../queue"
 import type {
@@ -12,8 +12,8 @@ import type {
   SimpleHighlight,
 } from "./types"
 import { getParsers } from "./default-parsers"
-import { resolve, isAbsolute, parse } from "path"
-import { existsSync } from "fs"
+import { resolve, isAbsolute, parse } from "node:path"
+import { existsSync } from "node:fs"
 import { registerEnvVar, env } from "../env"
 import { isBunfsPath, normalizeBunfsPath } from "../bunfs"
 
@@ -106,7 +106,13 @@ export class TreeSitterClient extends EventEmitter<TreeSitterClientEvents> {
       }
     }
 
-    this.worker = new Worker(worker_path)
+    try {
+      this.worker = new Worker(worker_path, { type: "module" })
+    } catch (e) {
+      // Deno throws synchronously for invalid Worker URLs
+      this.workerStartError = new Error(`Worker error: ${(e as Error).message}`)
+      return
+    }
 
     // @ts-ignore - onmessage exists
     this.worker.onmessage = this.handleWorkerMessage.bind(this)
@@ -146,6 +152,9 @@ export class TreeSitterClient extends EventEmitter<TreeSitterClientEvents> {
   }
 
   async initialize(): Promise<void> {
+    if ((this as any).workerStartError) {
+      throw (this as any).workerStartError
+    }
     if (this.initializePromise) {
       return this.initializePromise
     }

@@ -1,4 +1,6 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer, type MockInput, type MockMouse } from "../testing/test-renderer"
 import { RendererControlState } from "../renderer"
 import { Renderable } from "../Renderable"
@@ -149,7 +151,7 @@ test("requestRender() does not trigger when renderer is suspended", async () => 
 
 test("requestRender() does trigger when renderer is paused", async () => {
   renderer.start()
-  await Bun.sleep(20)
+  await sleep(20)
   renderer.pause()
 
   let renderCalled = false
@@ -162,7 +164,7 @@ test("requestRender() does trigger when renderer is paused", async () => {
   }
 
   renderer.requestRender()
-  await Bun.sleep(20)
+  await sleep(20)
 
   expect(renderCalled).toBe(true)
 

@@ -1,6 +1,8 @@
-import { describe, test, expect } from "bun:test"
+import "./test-setup.ts"
+import { describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createMockKeys, KeyCodes } from "./mock-keys"
-import { PassThrough } from "stream"
+import { PassThrough } from "node:stream"
 
 class MockRenderer {
   public stdin: PassThrough

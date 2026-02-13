@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`Renderable - insertBefore reproduces insertBefore behavior with state change after timeout: insertBefore initial state 1`] = `
+snapshot[`global > Renderable - insertBefore > reproduces insertBefore behavior with state change after timeout 1`] = `
 "banana    
 apple     
 pear      
@@ -9,7 +9,7 @@ pear
 "
 `;
 
-exports[`Renderable - insertBefore reproduces insertBefore behavior with state change after timeout: insertBefore reordered state 1`] = `
+snapshot[`global > Renderable - insertBefore > reproduces insertBefore behavior with state change after timeout 2`] = `
 "banana    
 pear      
 apple     

@@ -1,4 +1,6 @@
-import { test, expect, beforeEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { InternalKeyHandler, KeyEvent } from "./KeyHandler"
 
 function createKeyHandler(useKittyKeyboard: boolean = false): InternalKeyHandler {

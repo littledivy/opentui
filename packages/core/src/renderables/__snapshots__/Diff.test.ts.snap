@@ -1,7 +1,7 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`DiffRenderable - unified view renders correctly: unified view simple diff 1`] = `
-" 1   function hello() {                                                         
+snapshot[`global > DiffRenderable - unified view renders correctly 1`] = `
+' 1   function hello() {                                                         
  2 -   console.log("Hello");                                                    
  2 +   console.log("Hello, World!");                                            
  3   }                                                                          
@@ -21,11 +21,11 @@ exports[`DiffRenderable - unified view renders correctly: unified view simple di
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - split view renders correctly: split view simple diff 1`] = `
-" 1   function hello() {                  1   function hello() {                 
+snapshot[`global > DiffRenderable - split view renders correctly 1`] = `
+' 1   function hello() {                  1   function hello() {                 
  2 -   console.log("Hello");             2 +   console.log("Hello, World!");    
  3   }                                   3   }                                  
                                                                                 
@@ -45,10 +45,10 @@ exports[`DiffRenderable - split view renders correctly: split view simple diff 1
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - multi-line diff unified view: unified view multi-line diff 1`] = `
+snapshot[`global > DiffRenderable - multi-line diff unified view 1`] = `
 "  1   function add(a, b) {                                                      
   2     return a + b;                                                           
   3   }                                                                         
@@ -72,7 +72,7 @@ exports[`DiffRenderable - multi-line diff unified view: unified view multi-line 
 "
 `;
 
-exports[`DiffRenderable - multi-line diff split view: split view multi-line diff 1`] = `
+snapshot[`global > DiffRenderable - multi-line diff split view 1`] = `
 "  1   function add(a, b) {                1   function add(a, b) {              
   2     return a + b;                     2     return a + b;                   
   3   }                                   3   }                                 
@@ -96,7 +96,7 @@ exports[`DiffRenderable - multi-line diff split view: split view multi-line diff
 "
 `;
 
-exports[`DiffRenderable - add-only diff unified view: unified view add-only diff 1`] = `
+snapshot[`global > DiffRenderable - add-only diff unified view 1`] = `
 " 1 + function newFunction() {                                                   
  2 +   return true;                                                             
  3 + }                                                                          
@@ -120,7 +120,7 @@ exports[`DiffRenderable - add-only diff unified view: unified view add-only diff
 "
 `;
 
-exports[`DiffRenderable - add-only diff split view: split view add-only diff 1`] = `
+snapshot[`global > DiffRenderable - add-only diff split view 1`] = `
 "                                         1 + function newFunction() {           
                                          2 +   return true;                     
                                          3 + }                                  
@@ -144,7 +144,7 @@ exports[`DiffRenderable - add-only diff split view: split view add-only diff 1`]
 "
 `;
 
-exports[`DiffRenderable - remove-only diff unified view: unified view remove-only diff 1`] = `
+snapshot[`global > DiffRenderable - remove-only diff unified view 1`] = `
 " 1 - function oldFunction() {                                                   
  2 -   return false;                                                            
  3 - }                                                                          
@@ -168,7 +168,7 @@ exports[`DiffRenderable - remove-only diff unified view: unified view remove-onl
 "
 `;
 
-exports[`DiffRenderable - remove-only diff split view: split view remove-only diff 1`] = `
+snapshot[`global > DiffRenderable - remove-only diff split view 1`] = `
 " 1 - function oldFunction() {                                                   
  2 -   return false;                                                            
  3 - }                                                                          
@@ -192,7 +192,7 @@ exports[`DiffRenderable - remove-only diff split view: split view remove-only di
 "
 `;
 
-exports[`DiffRenderable - large line numbers displayed correctly: unified view large line numbers 1`] = `
+snapshot[`global > DiffRenderable - large line numbers displayed correctly 1`] = `
 " 42   const line42 = 'context';                                                 
  43   const line43 = 'context';                                                 
  44 - const line44 = 'removed';                                                 
@@ -216,7 +216,7 @@ exports[`DiffRenderable - large line numbers displayed correctly: unified view l
 "
 `;
 
-exports[`DiffRenderable - split view alignment with empty lines: split view alignment 1`] = `
+snapshot[`global > DiffRenderable - split view alignment with empty lines 1`] = `
 " 1 line1                                 1   line1                              
                                          2 + line2_added                        
                                          3 + line3_added                        
@@ -240,7 +240,7 @@ exports[`DiffRenderable - split view alignment with empty lines: split view alig
 "
 `;
 
-exports[`DiffRenderable - line numbers hidden for empty alignment lines in split view: split view with hidden line numbers for empty lines 1`] = `
+snapshot[`global > DiffRenderable - line numbers hidden for empty alignment lines in split view 1`] = `
 "                                         1 + function newFunction() {           
                                          2 +   return true;                     
                                          3 + }                                  
@@ -264,7 +264,7 @@ exports[`DiffRenderable - line numbers hidden for empty alignment lines in split
 "
 `;
 
-exports[`DiffRenderable - consistent left padding for line numbers > 9: unified view with double-digit line numbers 1`] = `
+snapshot[`global > DiffRenderable - consistent left padding for line numbers > 9 1`] = `
 "  8   line8                                                                     
   9   line9                                                                     
  10 - line10_old                                                                
@@ -288,8 +288,8 @@ exports[`DiffRenderable - consistent left padding for line numbers > 9: unified 
 "
 `;
 
-exports[`DiffRenderable - wrapMode works in unified view: wrapMode-none 1`] = `
-" 1   function hello() {                                                         
+snapshot[`global > DiffRenderable - wrapMode works in unified view 1`] = `
+' 1   function hello() {                                                         
  2 -   console.log("This is a very long line that should wrap when wrapMode is s
  2 +   console.log("This is a very long line that has been modified and should w
  3   }                                                                          
@@ -309,11 +309,11 @@ exports[`DiffRenderable - wrapMode works in unified view: wrapMode-none 1`] = `
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - wrapMode works in unified view: wrapMode-word 1`] = `
-" 1   function hello() {                                                         
+snapshot[`global > DiffRenderable - wrapMode works in unified view 2`] = `
+' 1   function hello() {                                                         
  2 -   console.log("This is a very long line that should wrap when wrapMode is  
      set to word but not when it is set to none");                              
  2 +   console.log("This is a very long line that has been modified and should  
@@ -333,11 +333,11 @@ exports[`DiffRenderable - wrapMode works in unified view: wrapMode-word 1`] = `
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - wrapMode works in unified view: wrapMode-none 2`] = `
-" 1   function hello() {                                                         
+snapshot[`global > DiffRenderable - wrapMode works in unified view 3`] = `
+' 1   function hello() {                                                         
  2 -   console.log("This is a very long line that should wrap when wrapMode is s
  2 +   console.log("This is a very long line that has been modified and should w
  3   }                                                                          
@@ -357,11 +357,11 @@ exports[`DiffRenderable - wrapMode works in unified view: wrapMode-none 2`] = `
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - multiple hunks in unified view: unified view multiple hunks 1`] = `
-"  1   function first() {                                                        
+snapshot[`global > DiffRenderable - multiple hunks in unified view 1`] = `
+'  1   function first() {                                                        
   2 -   return 1;                                                               
   2 +   return "one";                                                           
   3   }                                                                         
@@ -381,11 +381,11 @@ exports[`DiffRenderable - multiple hunks in unified view: unified view multiple 
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - multiple hunks in split view: split view multiple hunks 1`] = `
-"  1   function first() {                  1   function first() {                
+snapshot[`global > DiffRenderable - multiple hunks in split view 1`] = `
+'  1   function first() {                  1   function first() {                
   2 -   return 1;                         2 +   return "one";                   
   3   }                                   3   }                                 
  15   function second() {                15   function second() {               
@@ -405,10 +405,10 @@ exports[`DiffRenderable - multiple hunks in split view: split view multiple hunk
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - no newline at end of file in unified view: unified view with no newline marker 1`] = `
+snapshot[`global > DiffRenderable - no newline at end of file in unified view 1`] = `
 " 1   line1                                                                      
  2   line2                                                                      
  3 - line3                                                                      
@@ -432,7 +432,7 @@ exports[`DiffRenderable - no newline at end of file in unified view: unified vie
 "
 `;
 
-exports[`DiffRenderable - no newline at end of file in split view: split view with no newline marker 1`] = `
+snapshot[`global > DiffRenderable - no newline at end of file in split view 1`] = `
 " 1   line1                               1   line1                              
  2   line2                               2   line2                              
  3 - line3                                                                      
@@ -456,7 +456,7 @@ exports[`DiffRenderable - no newline at end of file in split view: split view wi
 "
 `;
 
-exports[`DiffRenderable - asymmetric block with more removes than adds in split view: split view asymmetric block more removes 1`] = `
+snapshot[`global > DiffRenderable - asymmetric block with more removes than adds in split view 1`] = `
 " 1   context_before                      1   context_before                     
  2 - remove1                             2 + add1                               
  3 - remove2                             3 + add2                               
@@ -480,7 +480,7 @@ exports[`DiffRenderable - asymmetric block with more removes than adds in split 
 "
 `;
 
-exports[`DiffRenderable - asymmetric block with more adds than removes in split view: split view asymmetric block more adds 1`] = `
+snapshot[`global > DiffRenderable - asymmetric block with more adds than removes in split view 1`] = `
 " 1   context_before                      1   context_before                     
  2 - remove1                             2 + add1                               
  3 - remove2                             3 + add2                               
@@ -504,7 +504,7 @@ exports[`DiffRenderable - asymmetric block with more adds than removes in split 
 "
 `;
 
-exports[`DiffRenderable - back-to-back change blocks without context lines in split view: split view back-to-back blocks 1`] = `
+snapshot[`global > DiffRenderable - back-to-back change blocks without context lines in split view 1`] = `
 " 1 - remove1                             1 + add1                               
  2 - remove2                             2 + add2                               
  3 - remove3                             3 + add3                               
@@ -528,7 +528,7 @@ exports[`DiffRenderable - back-to-back change blocks without context lines in sp
 "
 `;
 
-exports[`DiffRenderable - very long lines wrapping multiple times in split view: split view multi-wrap lines 1`] = `
+snapshot[`global > DiffRenderable - very long lines wrapping multiple times in split view 1`] = `
 " 1   short line                          1   short line                         
  2 - This is an extremely long line      2 + This is an extremely long line     
      that will definitely wrap multiple      that has been modified and will    
@@ -552,8 +552,8 @@ exports[`DiffRenderable - very long lines wrapping multiple times in split view:
 "
 `;
 
-exports[`DiffRenderable - invalid diff format shows error with raw diff: invalid diff format with error 1`] = `
-"Error parsing diff: Unknown line 5 "-  console.log(\\"Hello\\");"                 
+snapshot[`global > DiffRenderable - invalid diff format shows error with raw diff 1`] = `
+'Error parsing diff: Unknown line 5 "-  console.log(\\\\"Hello\\\\");"                 
                                                                                 
 --- a/test.js                                                                   
 +++ b/test.js                                                                   
@@ -573,10 +573,10 @@ exports[`DiffRenderable - invalid diff format shows error with raw diff: invalid
                                                                                 
                                                                                 
                                                                                 
-"
+'
 `;
 
-exports[`DiffRenderable - diff with only context lines (no changes): diff with only context lines 1`] = `
+snapshot[`global > DiffRenderable - diff with only context lines (no changes) 1`] = `
 " 1 line1                                                                        
  2 line2                                                                        
  3 line3                                                                        
@@ -600,7 +600,7 @@ exports[`DiffRenderable - diff with only context lines (no changes): diff with o
 "
 `;
 
-exports[`DiffRenderable - can toggle conceal with markdown diff: markdown diff with conceal enabled 1`] = `
+snapshot[`global > DiffRenderable - can toggle conceal with markdown diff 1`] = `
 " 1   First line                                                                 
  2 - Some text old**                                                            
  2 + So text**boldext** and *italic*                                            
@@ -624,7 +624,7 @@ exports[`DiffRenderable - can toggle conceal with markdown diff: markdown diff w
 "
 `;
 
-exports[`DiffRenderable - can toggle conceal with markdown diff: markdown diff with conceal disabled 1`] = `
+snapshot[`global > DiffRenderable - can toggle conceal with markdown diff 2`] = `
 " 1   First line                                                                 
  2 - Some text **old**                                                          
  2 + Some text **boldtext** and *italic*                                        
@@ -648,7 +648,7 @@ exports[`DiffRenderable - can toggle conceal with markdown diff: markdown diff w
 "
 `;
 
-exports[`DiffRenderable - conceal works in split view: split view markdown diff with conceal enabled 1`] = `
+snapshot[`global > DiffRenderable - conceal works in split view 1`] = `
 " 1   First line                          1   First line                         
  2 - Some old text                       2 + Some new text                      
  3   End line                            3   End line                           
@@ -672,7 +672,7 @@ exports[`DiffRenderable - conceal works in split view: split view markdown diff 
 "
 `;
 
-exports[`DiffRenderable - conceal works in split view: split view markdown diff with conceal disabled 1`] = `
+snapshot[`global > DiffRenderable - conceal works in split view 2`] = `
 " 1   First line                          1   First line                         
  2 - Some **old** text                   2 + Some **new** text                  
  3   End line                            3   End line                           
@@ -696,7 +696,7 @@ exports[`DiffRenderable - conceal works in split view: split view markdown diff 
 "
 `;
 
-exports[`DiffRenderable - line numbers update correctly after resize causes wrapping changes: before resize - line numbers with no wrapping 1`] = `
+snapshot[`global > DiffRenderable - line numbers update correctly after resize causes wrapping changes 1`] = `
 " 1   function calculateSomethingVeryComplexWithALongFunctionNameThatWillWrap() {                                        
  2 -   const oldResultWithAVeryLongVariableNameThatWillDefinitelyWrapWhenRenderedInASmallerTerminal = 42;               
  2 +   const newResultWithAVeryLongVariableNameThatWillDefinitelyWrapWhenRenderedInASmallerTerminal = 100;              
@@ -740,7 +740,7 @@ exports[`DiffRenderable - line numbers update correctly after resize causes wrap
 "
 `;
 
-exports[`DiffRenderable - line numbers update correctly after resize causes wrapping changes: after resize - line numbers with wrapping 1`] = `
+snapshot[`global > DiffRenderable - line numbers update correctly after resize causes wrapping changes 2`] = `
 "  1   function                                              
       calculateSomethingVeryComplexWithALongFunctionNameThat
       WillWrap() {                                          

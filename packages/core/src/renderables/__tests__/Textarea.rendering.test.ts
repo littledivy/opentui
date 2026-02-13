@@ -1,11 +1,14 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test"
+import "../../testing/test-setup.ts"
+import { describe, it, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer, type MockInput } from "../../testing/test-renderer"
 import { createTextareaRenderable } from "./renderable-test-utils"
 import { RGBA } from "../../lib/RGBA"
 import { SyntaxStyle } from "../../syntax-style"
 import { OptimizedBuffer } from "../../buffer"
 import { fg, t } from "../../lib"
-import { BoxRenderable, TextareaRenderable, TextRenderable } from ".."
+import { BoxRenderable, TextareaRenderable, TextRenderable } from "../index.ts"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -32,7 +35,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Wrapping", () => {
-    it("should move cursor down through all wrapped visual lines at column 0", async () => {
+    it("should move cursor down through all wrapped visual lines at column 0", async (ctx) => {
       // Create a long line that will wrap into multiple visual lines
       const longText =
         "This is a very long line that will definitely wrap into multiple visual lines when the viewport is small"
@@ -77,7 +80,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(visualCursor.visualCol).toBe(0)
     })
 
-    it("should move cursor up through all wrapped visual lines at column 0", async () => {
+    it("should move cursor up through all wrapped visual lines at column 0", async (ctx) => {
       // Create a long line that will wrap into multiple visual lines
       const longText =
         "This is a very long line that will definitely wrap into multiple visual lines when the viewport is small"
@@ -132,7 +135,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(visualCursor.visualCol).toBe(0)
     })
 
-    it("should handle wrap mode property", async () => {
+    it("should handle wrap mode property", async (ctx) => {
       const longText = "A".repeat(100)
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: longText,
@@ -151,7 +154,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(unwrappedCount).toBe(1)
     })
 
-    it("should handle wrapMode changes", async () => {
+    it("should handle wrapMode changes", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello wonderful world",
         width: 12,
@@ -165,7 +168,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.wrapMode).toBe("word")
     })
 
-    it("should render with tab indicator correctly", async () => {
+    it("should render with tab indicator correctly", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 1\tTabbed\nLine 2\t\tDouble tab",
         tabIndicator: "→",
@@ -176,12 +179,12 @@ describe("Textarea - Rendering Tests", () => {
 
       await renderOnce()
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
   })
 
   describe("Height and Width Measurement", () => {
-    it("should grow height for multiline text without wrapping", async () => {
+    it("should grow height for multiline text without wrapping", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
         wrapMode: "none",
@@ -194,7 +197,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.width).toBeGreaterThanOrEqual(6)
     })
 
-    it("should grow height for wrapped text when wrapping enabled", async () => {
+    it("should grow height for wrapped text when wrapping enabled", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "This is a very long line that will definitely wrap to multiple lines",
         wrapMode: "word",
@@ -207,7 +210,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.width).toBeLessThanOrEqual(15)
     })
 
-    it("should measure full width when wrapping is disabled and not constrained by parent", async () => {
+    it("should measure full width when wrapping is disabled and not constrained by parent", async (ctx) => {
       const longLine = "This is a very long line that would wrap but wrapping is disabled"
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: longLine,
@@ -221,7 +224,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.width).toBe(longLine.length)
     })
 
-    it("should shrink height when deleting lines via value setter", async () => {
+    it("should shrink height when deleting lines via value setter", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
         width: 40,
@@ -240,7 +243,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Line 1\nLine 2")
     })
 
-    it("should update height when content changes from single to multiline", async () => {
+    it("should update height when content changes from single to multiline", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Single line",
         wrapMode: "none",
@@ -255,7 +258,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.height).toBe(3)
     })
 
-    it("should grow height when pressing Enter to add newlines", async () => {
+    it("should grow height when pressing Enter to add newlines", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Single line",
         width: 40,
@@ -301,7 +304,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Unicode Support", () => {
-    it("should handle emoji insertion", async () => {
+    it("should handle emoji insertion", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello",
         width: 40,
@@ -315,7 +318,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Hello 🌟")
     })
 
-    it("should handle CJK characters", async () => {
+    it("should handle CJK characters", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello",
         width: 40,
@@ -329,7 +332,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Hello 世界")
     })
 
-    it("should handle emoji cursor movement", async () => {
+    it("should handle emoji cursor movement", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "A🌟B",
         width: 40,
@@ -351,7 +354,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Content Property", () => {
-    it("should update content programmatically", async () => {
+    it("should update content programmatically", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Initial",
         width: 40,
@@ -363,7 +366,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Updated")
     })
 
-    it("should reset cursor when content changes", async () => {
+    it("should reset cursor when content changes", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello World",
         width: 40,
@@ -379,7 +382,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.logicalCursor.col).toBe(0)
     })
 
-    it("should clear text with clear() method", async () => {
+    it("should clear text with clear() method", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello World",
         width: 40,
@@ -392,7 +395,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should clear highlights with clear() method", async () => {
+    it("should clear highlights with clear() method", async (ctx) => {
       const style = SyntaxStyle.create()
       const styleId = style.registerStyle("highlight", {
         fg: RGBA.fromValues(1, 0, 0, 1),
@@ -422,7 +425,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(highlightsAfter.length).toBe(0)
     })
 
-    it("should clear both text and highlights together", async () => {
+    it("should clear both text and highlights together", async (ctx) => {
       const style = SyntaxStyle.create()
       const styleId = style.registerStyle("highlight", {
         fg: RGBA.fromValues(1, 0, 0, 1),
@@ -449,7 +452,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.getLineHighlights(1).length).toBe(0)
     })
 
-    it("should allow typing after clear()", async () => {
+    it("should allow typing after clear()", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello World",
         width: 40,
@@ -480,7 +483,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Rendering After Edits", () => {
-    it("should render correctly after insert text", async () => {
+    it("should render correctly after insert text", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Test",
         width: 40,
@@ -499,7 +502,7 @@ describe("Textarea - Rendering Tests", () => {
       buffer.destroy()
     })
 
-    it("should render correctly after rapid edits", async () => {
+    it("should render correctly after rapid edits", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -521,7 +524,7 @@ describe("Textarea - Rendering Tests", () => {
       buffer.destroy()
     })
 
-    it("should render correctly after newline", async () => {
+    it("should render correctly after newline", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello",
         width: 40,
@@ -543,7 +546,7 @@ describe("Textarea - Rendering Tests", () => {
       buffer.destroy()
     })
 
-    it("should render correctly after backspace", async () => {
+    it("should render correctly after backspace", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello",
         width: 40,
@@ -564,7 +567,7 @@ describe("Textarea - Rendering Tests", () => {
       buffer.destroy()
     })
 
-    it("should render correctly with draw-edit-draw pattern", async () => {
+    it("should render correctly with draw-edit-draw pattern", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Test",
         width: 40,
@@ -585,7 +588,7 @@ describe("Textarea - Rendering Tests", () => {
       buffer.destroy()
     })
 
-    it("should render correctly after multiple text buffer modifications", async () => {
+    it("should render correctly after multiple text buffer modifications", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line1\nLine2\nLine3",
         width: 40,
@@ -615,7 +618,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Viewport Scrolling", () => {
-    it("should scroll viewport down when cursor moves below visible area", async () => {
+    it("should scroll viewport down when cursor moves below visible area", async (ctx) => {
       // Create editor with small viewport
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 0\nLine 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9",
@@ -640,7 +643,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeGreaterThanOrEqual(3)
     })
 
-    it("should scroll viewport up when cursor moves above visible area", async () => {
+    it("should scroll viewport up when cursor moves above visible area", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 0\nLine 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9",
         width: 40,
@@ -664,7 +667,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeLessThanOrEqual(1)
     })
 
-    it("should scroll viewport when using arrow keys to move beyond visible area", async () => {
+    it("should scroll viewport when using arrow keys to move beyond visible area", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 20 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -686,7 +689,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeGreaterThan(0)
     })
 
-    it("should maintain scroll margin when moving cursor", async () => {
+    it("should maintain scroll margin when moving cursor", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 20 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -706,7 +709,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeGreaterThanOrEqual(0)
     })
 
-    it("should handle viewport scrolling with text wrapping", async () => {
+    it("should handle viewport scrolling with text wrapping", async (ctx) => {
       const longLine = "word ".repeat(50) // Creates line that will wrap
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 10 }, (_, i) => (i === 5 ? longLine : `Line ${i}`)).join("\n"),
@@ -733,7 +736,7 @@ describe("Textarea - Rendering Tests", () => {
       // This is complex with wrapping - we need virtual line scrolling
     })
 
-    it("should verify viewport follows cursor to line 10", async () => {
+    it("should verify viewport follows cursor to line 10", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 20 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -758,7 +761,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(10).toBeLessThan(viewportEnd)
     })
 
-    it("should track viewport offset as cursor moves through document", async () => {
+    it("should track viewport offset as cursor moves through document", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 15 }, (_, i) => `Line ${i}`).join("\n"),
         width: 30,
@@ -789,7 +792,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewportOffsets[viewportOffsets.length - 1]).toBeGreaterThan(5)
     })
 
-    it("should scroll viewport when cursor moves with Page Up/Page Down", async () => {
+    it("should scroll viewport when cursor moves with Page Up/Page Down", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 30 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -813,7 +816,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.logicalCursor.row).toBe(15)
     })
 
-    it("should scroll viewport down when pressing Enter repeatedly", async () => {
+    it("should scroll viewport down when pressing Enter repeatedly", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Start",
         width: 40,
@@ -845,7 +848,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(cursorLine).toBeLessThan(viewport.offsetY + viewport.height)
     })
 
-    it("should scroll viewport up when pressing Backspace to delete characters and move up", async () => {
+    it("should scroll viewport up when pressing Backspace to delete characters and move up", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 15 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -878,7 +881,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.logicalCursor.row).toBe(2)
     })
 
-    it("should scroll viewport when typing at end creates wrapped lines beyond viewport", async () => {
+    it("should scroll viewport when typing at end creates wrapped lines beyond viewport", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Start",
         width: 20,
@@ -909,7 +912,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeGreaterThanOrEqual(0)
     })
 
-    it("should scroll viewport when using Enter to add lines, then Backspace to remove them", async () => {
+    it("should scroll viewport when using Enter to add lines, then Backspace to remove them", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 0\nLine 1\nLine 2",
         width: 40,
@@ -944,7 +947,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(viewport.offsetY).toBeLessThan(maxOffset)
     })
 
-    it("should show last line at bottom of viewport with no gap", async () => {
+    it("should show last line at bottom of viewport with no gap", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: Array.from({ length: 10 }, (_, i) => `Line ${i}`).join("\n"),
         width: 40,
@@ -971,7 +974,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(lastVisibleLine).toBe(9)
     })
 
-    it("should not scroll past end when document is smaller than viewport", async () => {
+    it("should not scroll past end when document is smaller than viewport", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 0\nLine 1\nLine 2",
         width: 40,
@@ -991,7 +994,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Placeholder Support", () => {
-    it("should display placeholder when empty", async () => {
+    it("should display placeholder when empty", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1004,7 +1007,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.placeholder).toBe("Enter text here...")
     })
 
-    it("should hide placeholder when text is inserted", async () => {
+    it("should hide placeholder when text is inserted", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1021,7 +1024,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Hi")
     })
 
-    it("should reactivate placeholder when all text is deleted", async () => {
+    it("should reactivate placeholder when all text is deleted", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Test",
         width: 40,
@@ -1041,7 +1044,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should update placeholder text dynamically", async () => {
+    it("should update placeholder text dynamically", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1057,7 +1060,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should update placeholder with styled text dynamically", async () => {
+    it("should update placeholder with styled text dynamically", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1072,7 +1075,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should work with value property setter", async () => {
+    it("should work with value property setter", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1089,7 +1092,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should handle placeholder with focus changes", async () => {
+    it("should handle placeholder with focus changes", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1107,7 +1110,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should handle typing after placeholder is shown", async () => {
+    it("should handle typing after placeholder is shown", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1127,7 +1130,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Hello")
     })
 
-    it("should show placeholder after deleting all typed text", async () => {
+    it("should show placeholder after deleting all typed text", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1152,7 +1155,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("")
     })
 
-    it("should handle placeholder with newlines", async () => {
+    it("should handle placeholder with newlines", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1166,7 +1169,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Content")
     })
 
-    it("should handle null placeholder (no placeholder)", async () => {
+    it("should handle null placeholder (no placeholder)", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1181,7 +1184,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(editor.plainText).toBe("Content")
     })
 
-    it("should clear placeholder when set to null", async () => {
+    it("should clear placeholder when set to null", async (ctx) => {
       const { textarea: editor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "",
         width: 40,
@@ -1199,7 +1202,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Textarea Content Snapshots", () => {
-    it("should render basic text content correctly", async () => {
+    it("should render basic text content correctly", async (ctx) => {
       await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello World",
         left: 5,
@@ -1209,10 +1212,10 @@ describe("Textarea - Rendering Tests", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should render multiline text content correctly", async () => {
+    it("should render multiline text content correctly", async (ctx) => {
       await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Line 1: Hello\nLine 2: World\nLine 3: Testing\nLine 4: Multiline",
         left: 1,
@@ -1222,10 +1225,10 @@ describe("Textarea - Rendering Tests", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should render text with character wrapping correctly", async () => {
+    it("should render text with character wrapping correctly", async (ctx) => {
       await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "This is a very long text that should wrap to multiple lines when wrap is enabled",
         wrapMode: "char",
@@ -1235,10 +1238,10 @@ describe("Textarea - Rendering Tests", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should render text with word wrapping and punctuation", async () => {
+    it("should render text with word wrapping and punctuation", async (ctx) => {
       await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Hello,World.Test-Example/Path with various punctuation marks!",
         wrapMode: "word",
@@ -1248,10 +1251,10 @@ describe("Textarea - Rendering Tests", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should render placeholder when creating textarea with placeholder directly", async () => {
+    it("should render placeholder when creating textarea with placeholder directly", async (ctx) => {
       await createTextareaRenderable(currentRenderer, renderOnce, {
         placeholder: "Enter text here...",
         left: 1,
@@ -1261,10 +1264,10 @@ describe("Textarea - Rendering Tests", () => {
       })
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should render placeholder when set programmatically after creation", async () => {
+    it("should render placeholder when set programmatically after creation", async (ctx) => {
       const { textarea } = await createTextareaRenderable(currentRenderer, renderOnce, {
         left: 1,
         top: 1,
@@ -1276,10 +1279,10 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
     })
 
-    it("should resize correctly when typing return as first input with placeholder", async () => {
+    it("should resize correctly when typing return as first input with placeholder", async (ctx) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, {
@@ -1308,14 +1311,14 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frameAfterEnter = captureFrame()
-      expect(frameAfterEnter).toMatchSnapshot()
+      await assertSnapshot(ctx,frameAfterEnter)
       expect(textarea.height).toBe(2)
       expect(textarea.plainText).toBe("\n")
     })
   })
 
   describe("Layout Reflow on Size Change", () => {
-    it("should reflow subsequent elements when textarea grows and shrinks", async () => {
+    it("should reflow subsequent elements when textarea grows and shrinks", async (ctx) => {
       const { textarea: firstEditor } = await createTextareaRenderable(currentRenderer, renderOnce, {
         initialValue: "Short",
         width: 20,
@@ -1357,7 +1360,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Width/Height Setter Layout Tests", () => {
-    it("should not shrink box when width is set via setter", async () => {
+    it("should not shrink box when width is set via setter", async (ctx) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1386,14 +1389,14 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(indicator.width).toBe(5)
       expect(content.width).toBeGreaterThan(0)
       expect(content.width).toBeLessThan(30)
     })
 
-    it("should not shrink box when height is set via setter in column layout with textarea", async () => {
+    it("should not shrink box when height is set via setter in column layout with textarea", async (ctx) => {
       resize(30, 15)
 
       const outerBox = new BoxRenderable(currentRenderer, { border: true, width: 25, height: 10 })
@@ -1428,14 +1431,14 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(header.height).toBe(3)
       expect(mainContent.height).toBeGreaterThan(0)
       expect(footer.height).toBe(2)
     })
 
-    it("should not shrink box when minWidth is set via setter", async () => {
+    it("should not shrink box when minWidth is set via setter", async (ctx) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1462,12 +1465,12 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
       expect(indicator.width).toBeGreaterThanOrEqual(5)
       expect(content.width).toBeGreaterThan(0)
     })
 
-    it("should not shrink box when minHeight is set via setter in column layout with textarea", async () => {
+    it("should not shrink box when minHeight is set via setter in column layout with textarea", async (ctx) => {
       resize(30, 15)
 
       const outerBox = new BoxRenderable(currentRenderer, { border: true, width: 25, height: 10 })
@@ -1502,14 +1505,14 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(header.height).toBeGreaterThanOrEqual(3)
       expect(mainContent.height).toBeGreaterThan(0)
       expect(footer.height).toBe(2)
     })
 
-    it("should not shrink box when width is set from undefined via setter", async () => {
+    it("should not shrink box when width is set from undefined via setter", async (ctx) => {
       resize(40, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 30 })
@@ -1536,13 +1539,13 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(indicator.width).toBe(5)
       expect(content.width).toBeGreaterThan(0)
     })
 
-    it("should verify dimensions are actually respected under extreme pressure", async () => {
+    it("should verify dimensions are actually respected under extreme pressure", async (ctx) => {
       resize(30, 10)
 
       const container = new BoxRenderable(currentRenderer, { border: true, width: 20 })
@@ -1582,7 +1585,7 @@ describe("Textarea - Rendering Tests", () => {
   })
 
   describe("Absolute Positioned Box with Textarea", () => {
-    it("should render textarea in absolute positioned box with padding and borders correctly", async () => {
+    it("should render textarea in absolute positioned box with padding and borders correctly", async (ctx) => {
       resize(80, 20)
 
       const notificationBox = new BoxRenderable(currentRenderer, {
@@ -1639,7 +1642,7 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(notificationBox.x).toBeGreaterThan(0)
       expect(notificationBox.y).toBe(2)
@@ -1659,7 +1662,7 @@ describe("Textarea - Rendering Tests", () => {
       )
     })
 
-    it("should render textarea fully visible in absolute positioned box at various positions", async () => {
+    it("should render textarea fully visible in absolute positioned box at various positions", async (ctx) => {
       resize(100, 25)
 
       const topRightBox = new BoxRenderable(currentRenderer, {
@@ -1709,7 +1712,7 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(topRightBox.y).toBe(1)
       expect(topRightBox.x).toBeGreaterThan(50)
@@ -1732,7 +1735,7 @@ describe("Textarea - Rendering Tests", () => {
       expect(bottomLeftTextarea.height).toBeGreaterThan(1)
     })
 
-    it("should handle width:100% textarea in absolute positioned box with constrained maxWidth", async () => {
+    it("should handle width:100% textarea in absolute positioned box with constrained maxWidth", async (ctx) => {
       resize(70, 15)
 
       const constrainedBox = new BoxRenderable(currentRenderer, {
@@ -1760,7 +1763,7 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(constrainedBox.width).toBeLessThanOrEqual(50)
       expect(constrainedBox.width).toBeGreaterThan(40)
@@ -1775,7 +1778,7 @@ describe("Textarea - Rendering Tests", () => {
       )
     })
 
-    it("should render multiple textarea elements in absolute positioned box with proper spacing", async () => {
+    it("should render multiple textarea elements in absolute positioned box with proper spacing", async (ctx) => {
       resize(90, 20)
 
       const infoBox = new BoxRenderable(currentRenderer, {
@@ -1821,7 +1824,7 @@ describe("Textarea - Rendering Tests", () => {
       await renderOnce()
 
       const frame = captureFrame()
-      expect(frame).toMatchSnapshot()
+      await assertSnapshot(ctx,frame)
 
       expect(headerText.plainText).toBe("System Update")
       expect(bodyTextarea.plainText).toBe("A new version is available with bug fixes and performance improvements.")

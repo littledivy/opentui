@@ -1,4 +1,6 @@
-import { test, expect, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer } from "../testing/test-renderer"
 
 // NOTE: These tests are not running the mouse activation sequences,

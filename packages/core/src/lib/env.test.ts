@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { envRegistry, registerEnvVar, env, clearEnvCache } from "./env.ts"
 
 // Backup and restore registry to avoid interfering with module-level registrations

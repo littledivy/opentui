@@ -1,7 +1,10 @@
-import { test, expect, beforeEach, afterEach, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../testing/test-renderer"
 import { BoxRenderable } from "../renderables/Box"
 import { TextRenderable } from "../renderables/Text"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let testRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -26,7 +29,7 @@ afterEach(() => {
 
 describe("Absolute Positioning - Snapshot Tests", () => {
   describe("Basic absolute positioning", () => {
-    test("absolute positioned box at top-left", async () => {
+    test("absolute positioned box at top-left", async (t) => {
       const box = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 0,
@@ -41,10 +44,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute positioned box at top-left")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute positioned box at bottom-right using right/bottom", async () => {
+    test("absolute positioned box at bottom-right using right/bottom", async (t) => {
       const box = new BoxRenderable(testRenderer, {
         position: "absolute",
         right: 0,
@@ -59,10 +62,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute positioned box at bottom-right")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute positioned box centered with left/top", async () => {
+    test("absolute positioned box centered with left/top", async (t) => {
       const box = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 10,
@@ -77,12 +80,12 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute positioned box centered")
+      await assertSnapshot(t, captureFrame())
     })
   })
 
   describe("Nested absolute positioning", () => {
-    test("absolute child inside absolute parent - basic", async () => {
+    test("absolute child inside absolute parent - basic", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 5,
@@ -107,10 +110,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("nested absolute - child inside parent at left/top")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child at bottom:0 inside absolute parent (issue #406 fix)", async () => {
+    test("absolute child at bottom:0 inside absolute parent (issue #406 fix)", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 5,
@@ -135,10 +138,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("nested absolute - child at bottom:0 of parent")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child at right:0 inside absolute parent", async () => {
+    test("absolute child at right:0 inside absolute parent", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 2,
@@ -163,10 +166,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("nested absolute - child at right:0 of parent")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child at bottom-right corner inside absolute parent", async () => {
+    test("absolute child at bottom-right corner inside absolute parent", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 3,
@@ -191,10 +194,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("nested absolute - child at bottom-right corner")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("multiple absolute children inside absolute parent at different positions", async () => {
+    test("multiple absolute children inside absolute parent at different positions", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 2,
@@ -252,12 +255,12 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("nested absolute - four corners inside parent")
+      await assertSnapshot(t, captureFrame())
     })
   })
 
   describe("Three-level nesting", () => {
-    test("deeply nested absolute positioning - grandchild at bottom", async () => {
+    test("deeply nested absolute positioning - grandchild at bottom", async (t) => {
       const grandparent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 1,
@@ -291,12 +294,12 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(grandparent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("three-level nested absolute - grandchild at bottom")
+      await assertSnapshot(t, captureFrame())
     })
   })
 
   describe("Mixed positioning", () => {
-    test("absolute child inside relative parent", async () => {
+    test("absolute child inside relative parent", async (t) => {
       const container = new BoxRenderable(testRenderer, {
         width: 40,
         height: 20,
@@ -326,10 +329,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(container)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child inside relative parent")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("sibling absolute elements at same level", async () => {
+    test("sibling absolute elements at same level", async (t) => {
       const box1 = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 0,
@@ -366,12 +369,12 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box3)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("sibling absolute elements overlapping")
+      await assertSnapshot(t, captureFrame())
     })
   })
 
   describe("Edge cases", () => {
-    test("absolute positioned box with negative coordinates (partially off-screen)", async () => {
+    test("absolute positioned box with negative coordinates (partially off-screen)", async (t) => {
       const box = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: -5,
@@ -386,10 +389,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute box with negative coordinates")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute positioned box extending beyond viewport", async () => {
+    test("absolute positioned box extending beyond viewport", async (t) => {
       const box = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 30,
@@ -404,10 +407,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(box)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute box extending beyond viewport")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child fills parent completely", async () => {
+    test("absolute child fills parent completely", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 5,
@@ -432,10 +435,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child fills parent with inset 0")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute positioned box with percentage width inside absolute parent", async () => {
+    test("absolute positioned box with percentage width inside absolute parent", async (t) => {
       resize(50, 20)
 
       const parent = new BoxRenderable(testRenderer, {
@@ -461,10 +464,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child with percentage width")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute positioned box with percentage height inside absolute parent", async () => {
+    test("absolute positioned box with percentage height inside absolute parent", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 5,
@@ -488,10 +491,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child with percentage height")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child with conflicting insets (left and right without explicit width)", async () => {
+    test("absolute child with conflicting insets (left and right without explicit width)", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 3,
@@ -515,10 +518,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child with left and right insets (no explicit width)")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("absolute child with conflicting insets (top and bottom without explicit height)", async () => {
+    test("absolute child with conflicting insets (top and bottom without explicit height)", async (t) => {
       const parent = new BoxRenderable(testRenderer, {
         position: "absolute",
         left: 5,
@@ -542,12 +545,12 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(parent)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("absolute child with top and bottom insets (no explicit height)")
+      await assertSnapshot(t, captureFrame())
     })
   })
 
   describe("Complex hierarchies", () => {
-    test("relative parent with absolute child containing absolute grandchild", async () => {
+    test("relative parent with absolute child containing absolute grandchild", async (t) => {
       const container = new BoxRenderable(testRenderer, {
         width: 40,
         height: 20,
@@ -587,10 +590,10 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(container)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("relative -> absolute -> absolute hierarchy")
+      await assertSnapshot(t, captureFrame())
     })
 
-    test("multiple nested relative and absolute layers", async () => {
+    test("multiple nested relative and absolute layers", async (t) => {
       const root = new BoxRenderable(testRenderer, {
         position: "relative",
         width: 38,
@@ -632,7 +635,7 @@ describe("Absolute Positioning - Snapshot Tests", () => {
       testRenderer.root.add(root)
 
       await renderOnce()
-      expect(captureFrame()).toMatchSnapshot("relative -> absolute -> relative -> absolute hierarchy")
+      await assertSnapshot(t, captureFrame())
     })
   })
 })

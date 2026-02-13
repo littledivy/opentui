@@ -1,4 +1,6 @@
-import { describe, expect, it, afterAll, beforeAll } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it, afterAll, beforeAll } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { InputRenderable, type InputRenderableOptions, InputRenderableEvents } from "./Input"
 import { createTestRenderer } from "../testing/test-renderer"
 import type { KeyEvent } from "../lib/KeyHandler"

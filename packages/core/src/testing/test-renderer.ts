@@ -1,4 +1,4 @@
-import { Readable } from "stream"
+import { Readable } from "node:stream"
 import { CliRenderer, type CliRendererConfig } from "../renderer"
 import { resolveRenderLib } from "../zig"
 import { createMockKeys } from "./mock-keys"

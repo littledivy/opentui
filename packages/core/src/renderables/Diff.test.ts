@@ -1,9 +1,12 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { DiffRenderable } from "./Diff"
 import { SyntaxStyle } from "../syntax-style"
 import { RGBA } from "../lib/RGBA"
 import { createTestRenderer, type TestRenderer } from "../testing"
 import type { SimpleHighlight } from "../lib/tree-sitter/types"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -76,7 +79,7 @@ const largeDiff = `--- a/large.js
  const line50 = 'context';
  const line51 = 'context';`
 
-test("DiffRenderable - basic construction with unified view", async () => {
+test("DiffRenderable - basic construction with unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -92,7 +95,7 @@ test("DiffRenderable - basic construction with unified view", async () => {
   expect(diffRenderable.view).toBe("unified")
 })
 
-test("DiffRenderable - basic construction with split view", async () => {
+test("DiffRenderable - basic construction with split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -108,7 +111,7 @@ test("DiffRenderable - basic construction with split view", async () => {
   expect(diffRenderable.view).toBe("split")
 })
 
-test("DiffRenderable - defaults to unified view", async () => {
+test("DiffRenderable - defaults to unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -122,7 +125,7 @@ test("DiffRenderable - defaults to unified view", async () => {
   expect(diffRenderable.view).toBe("unified")
 })
 
-test("DiffRenderable - unified view renders correctly", async () => {
+test("DiffRenderable - unified view renders correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -140,14 +143,14 @@ test("DiffRenderable - unified view renders correctly", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view simple diff")
+  await assertSnapshot(t, frame)
 
   // Check that both removed and added lines are present
   expect(frame).toContain('console.log("Hello")')
   expect(frame).toContain('console.log("Hello, World!")')
 })
 
-test("DiffRenderable - split view renders correctly", async () => {
+test("DiffRenderable - split view renders correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -165,7 +168,7 @@ test("DiffRenderable - split view renders correctly", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view simple diff")
+  await assertSnapshot(t, frame)
 
   // In split view, both sides should be visible (may be wrapped)
   expect(frame).toContain("console.log")
@@ -173,7 +176,7 @@ test("DiffRenderable - split view renders correctly", async () => {
   expect(frame).toContain("World")
 })
 
-test("DiffRenderable - multi-line diff unified view", async () => {
+test("DiffRenderable - multi-line diff unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -191,7 +194,7 @@ test("DiffRenderable - multi-line diff unified view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view multi-line diff")
+  await assertSnapshot(t, frame)
 
   // Check for additions
   expect(frame).toContain("function subtract")
@@ -199,7 +202,7 @@ test("DiffRenderable - multi-line diff unified view", async () => {
   expect(frame).toContain("a * b * 1")
 })
 
-test("DiffRenderable - multi-line diff split view", async () => {
+test("DiffRenderable - multi-line diff split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -217,7 +220,7 @@ test("DiffRenderable - multi-line diff split view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view multi-line diff")
+  await assertSnapshot(t, frame)
 
   // Left side should have old code
   expect(frame).toContain("a * b")
@@ -225,7 +228,7 @@ test("DiffRenderable - multi-line diff split view", async () => {
   expect(frame).toContain("subtract")
 })
 
-test("DiffRenderable - add-only diff unified view", async () => {
+test("DiffRenderable - add-only diff unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -243,12 +246,12 @@ test("DiffRenderable - add-only diff unified view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view add-only diff")
+  await assertSnapshot(t, frame)
 
   expect(frame).toContain("newFunction")
 })
 
-test("DiffRenderable - add-only diff split view", async () => {
+test("DiffRenderable - add-only diff split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -266,13 +269,13 @@ test("DiffRenderable - add-only diff split view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view add-only diff")
+  await assertSnapshot(t, frame)
 
   // Right side should have the new function
   expect(frame).toContain("newFunction")
 })
 
-test("DiffRenderable - remove-only diff unified view", async () => {
+test("DiffRenderable - remove-only diff unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -290,12 +293,12 @@ test("DiffRenderable - remove-only diff unified view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view remove-only diff")
+  await assertSnapshot(t, frame)
 
   expect(frame).toContain("oldFunction")
 })
 
-test("DiffRenderable - remove-only diff split view", async () => {
+test("DiffRenderable - remove-only diff split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -313,13 +316,13 @@ test("DiffRenderable - remove-only diff split view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view remove-only diff")
+  await assertSnapshot(t, frame)
 
   // Left side should have the old function
   expect(frame).toContain("oldFunction")
 })
 
-test("DiffRenderable - large line numbers displayed correctly", async () => {
+test("DiffRenderable - large line numbers displayed correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -338,13 +341,13 @@ test("DiffRenderable - large line numbers displayed correctly", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view large line numbers")
+  await assertSnapshot(t, frame)
 
   // Check that line numbers in the 40s are displayed
   expect(frame).toMatch(/4[0-9]/)
 })
 
-test("DiffRenderable - can toggle view mode", async () => {
+test("DiffRenderable - can toggle view mode", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -375,7 +378,7 @@ test("DiffRenderable - can toggle view mode", async () => {
   expect(unifiedFrame).not.toBe(splitFrame)
 })
 
-test("DiffRenderable - can update diff content", async () => {
+test("DiffRenderable - can update diff content", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -404,7 +407,7 @@ test("DiffRenderable - can update diff content", async () => {
   expect(frame2).not.toContain('console.log("Hello")')
 })
 
-test("DiffRenderable - can toggle line numbers", async () => {
+test("DiffRenderable - can toggle line numbers", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -431,7 +434,7 @@ test("DiffRenderable - can toggle line numbers", async () => {
   expect(diffRenderable.showLineNumbers).toBe(false)
 })
 
-test("DiffRenderable - can update filetype", async () => {
+test("DiffRenderable - can update filetype", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     keyword: { fg: RGBA.fromValues(1, 0, 0, 1) },
@@ -457,7 +460,7 @@ test("DiffRenderable - can update filetype", async () => {
   expect(diffRenderable.filetype).toBe("typescript")
 })
 
-test("DiffRenderable - handles empty diff", async () => {
+test("DiffRenderable - handles empty diff", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -478,7 +481,7 @@ test("DiffRenderable - handles empty diff", async () => {
   expect(diffRenderable.diff).toBe("")
 })
 
-test("DiffRenderable - handles diff with no changes", async () => {
+test("DiffRenderable - handles diff with no changes", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -506,7 +509,7 @@ test("DiffRenderable - handles diff with no changes", async () => {
   expect(frame).toContain("function hello")
 })
 
-test("DiffRenderable - can update wrapMode", async () => {
+test("DiffRenderable - can update wrapMode", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -530,7 +533,7 @@ test("DiffRenderable - can update wrapMode", async () => {
   expect(diffRenderable.wrapMode).toBe("char")
 })
 
-test("DiffRenderable - split view alignment with empty lines", async () => {
+test("DiffRenderable - split view alignment with empty lines", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -558,7 +561,7 @@ test("DiffRenderable - split view alignment with empty lines", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view alignment")
+  await assertSnapshot(t, frame)
 
   // Both sides should have same number of lines (with empty lines for alignment)
   expect(frame).toContain("line1")
@@ -566,7 +569,7 @@ test("DiffRenderable - split view alignment with empty lines", async () => {
   expect(frame).toContain("line2_added")
 })
 
-test("DiffRenderable - context lines shown on both sides in split view", async () => {
+test("DiffRenderable - context lines shown on both sides in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -590,7 +593,7 @@ test("DiffRenderable - context lines shown on both sides in split view", async (
   expect(frame).toContain("function multiply")
 })
 
-test("DiffRenderable - custom colors applied correctly", async () => {
+test("DiffRenderable - custom colors applied correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -616,7 +619,7 @@ test("DiffRenderable - custom colors applied correctly", async () => {
   expect(frame).toContain('console.log("Hello")')
 })
 
-test("DiffRenderable - line numbers hidden for empty alignment lines in split view", async () => {
+test("DiffRenderable - line numbers hidden for empty alignment lines in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -635,13 +638,13 @@ test("DiffRenderable - line numbers hidden for empty alignment lines in split vi
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view with hidden line numbers for empty lines")
+  await assertSnapshot(t, frame)
 
   // Right side should have line numbers for new lines
   // Left side should have empty lines without line numbers
 })
 
-test("DiffRenderable - stable rendering across multiple frames (no visual glitches)", async () => {
+test("DiffRenderable - stable rendering across multiple frames (no visual glitches)", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -659,7 +662,7 @@ test("DiffRenderable - stable rendering across multiple frames (no visual glitch
   currentRenderer.root.add(diffRenderable)
 
   // Wait for automatic initial render to happen
-  await Bun.sleep(50)
+  await sleep(50)
 
   const frameAfterAutoRender = captureFrame()
 
@@ -704,7 +707,7 @@ test("DiffRenderable - stable rendering across multiple frames (no visual glitch
   expect(uniqueWidths.size).toBe(1) // Gutter width should be consistent
 })
 
-test("DiffRenderable - can be constructed without diff and set via setter", async () => {
+test("DiffRenderable - can be constructed without diff and set via setter", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -735,7 +738,7 @@ test("DiffRenderable - can be constructed without diff and set via setter", asyn
   expect(frame).toContain('console.log("Hello, World!")')
 })
 
-test("DiffRenderable - consistent left padding for line numbers > 9", async () => {
+test("DiffRenderable - consistent left padding for line numbers > 9", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -770,7 +773,7 @@ test("DiffRenderable - consistent left padding for line numbers > 9", async () =
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view with double-digit line numbers")
+  await assertSnapshot(t, frame)
 
   const frameLines = frame.split("\n")
 
@@ -799,7 +802,7 @@ test("DiffRenderable - consistent left padding for line numbers > 9", async () =
   expect(line16Match![1].length).toBeGreaterThanOrEqual(1) // At least 1 space of left padding
 })
 
-test("DiffRenderable - line numbers are correct in unified view", async () => {
+test("DiffRenderable - line numbers are correct in unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -831,7 +834,7 @@ test("DiffRenderable - line numbers are correct in unified view", async () => {
   expect(addedLine).toMatch(/^ *2 \+/)
 })
 
-test("DiffRenderable - line numbers are correct in split view", async () => {
+test("DiffRenderable - line numbers are correct in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -862,7 +865,7 @@ test("DiffRenderable - line numbers are correct in split view", async () => {
   expect(splitLine).toMatch(/2 \+.*console\.log\("Hello, World!"\)/)
 })
 
-test("DiffRenderable - split view should not wrap lines prematurely", async () => {
+test("DiffRenderable - split view should not wrap lines prematurely", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -912,7 +915,7 @@ test("DiffRenderable - split view should not wrap lines prematurely", async () =
   // We've already verified that above
 })
 
-test("DiffRenderable - split view alignment with calculator diff", async () => {
+test("DiffRenderable - split view alignment with calculator diff", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -972,7 +975,7 @@ test("DiffRenderable - split view alignment with calculator diff", async () => {
   expect(leftClosingBrace).toBe(rightClosingBrace)
 })
 
-test("DiffRenderable - switching between unified and split views multiple times", async () => {
+test("DiffRenderable - switching between unified and split views multiple times", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1024,7 +1027,7 @@ test("DiffRenderable - switching between unified and split views multiple times"
   expect(frame).toContain('console.log("Hello, World!")')
 })
 
-test("DiffRenderable - wrapMode works in unified view", async () => {
+test("DiffRenderable - wrapMode works in unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1054,7 +1057,7 @@ test("DiffRenderable - wrapMode works in unified view", async () => {
 
   // Capture with wrapMode: none
   const frameNone = captureFrame()
-  expect(frameNone).toMatchSnapshot("wrapMode-none")
+  await assertSnapshot(t, frameNone)
 
   // Change to wrapMode: word
   diffRenderable.wrapMode = "word"
@@ -1062,7 +1065,7 @@ test("DiffRenderable - wrapMode works in unified view", async () => {
 
   // Capture with wrapMode: word
   const frameWord = captureFrame()
-  expect(frameWord).toMatchSnapshot("wrapMode-word")
+  await assertSnapshot(t, frameWord)
 
   // Frames should be different (word wrapping should create more lines)
   expect(frameNone).not.toBe(frameWord)
@@ -1073,11 +1076,11 @@ test("DiffRenderable - wrapMode works in unified view", async () => {
 
   // Should match the original
   const frameNoneAgain = captureFrame()
-  expect(frameNoneAgain).toMatchSnapshot("wrapMode-none")
+  await assertSnapshot(t, frameNoneAgain)
   expect(frameNoneAgain).toBe(frameNone)
 })
 
-test("DiffRenderable - split view with wrapMode honors wrapping alignment", async () => {
+test("DiffRenderable - split view with wrapMode honors wrapping alignment", async (t) => {
   // Create a larger test renderer to fit the whole diff with wrapping
   const testRenderer = await createTestRenderer({ width: 80, height: 40 })
   const renderer = testRenderer.renderer
@@ -1156,7 +1159,7 @@ test("DiffRenderable - split view with wrapMode honors wrapping alignment", asyn
   renderer.destroy()
 })
 
-test("DiffRenderable - context lines show new line numbers in unified view", async () => {
+test("DiffRenderable - context lines show new line numbers in unified view", async (t) => {
   // Create a larger test renderer to fit the whole diff
   const testRenderer = await createTestRenderer({ width: 80, height: 30 })
   const renderer = testRenderer.renderer
@@ -1236,7 +1239,7 @@ test("DiffRenderable - context lines show new line numbers in unified view", asy
   renderer.destroy()
 })
 
-test("DiffRenderable - multiple hunks in unified view", async () => {
+test("DiffRenderable - multiple hunks in unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1275,7 +1278,7 @@ test("DiffRenderable - multiple hunks in unified view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view multiple hunks")
+  await assertSnapshot(t, frame)
 
   // All three hunks should be present
   expect(frame).toContain('return "one"')
@@ -1298,7 +1301,7 @@ test("DiffRenderable - multiple hunks in unified view", async () => {
   expect(thirdHunkLine).toMatch(/32 \+/)
 })
 
-test("DiffRenderable - multiple hunks in split view", async () => {
+test("DiffRenderable - multiple hunks in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1336,7 +1339,7 @@ test("DiffRenderable - multiple hunks in split view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view multiple hunks")
+  await assertSnapshot(t, frame)
 
   // All three hunks should be present in split view
   expect(frame).toContain('return "one"')
@@ -1348,7 +1351,7 @@ test("DiffRenderable - multiple hunks in split view", async () => {
   expect(frame).toContain('console.log("old")')
 })
 
-test("DiffRenderable - no newline at end of file in unified view", async () => {
+test("DiffRenderable - no newline at end of file in unified view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1377,7 +1380,7 @@ test("DiffRenderable - no newline at end of file in unified view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("unified view with no newline marker")
+  await assertSnapshot(t, frame)
 
   // Should show both old and new versions
   expect(frame).toContain("line3")
@@ -1390,7 +1393,7 @@ test("DiffRenderable - no newline at end of file in unified view", async () => {
   expect(markerLines.length).toBe(0)
 })
 
-test("DiffRenderable - no newline at end of file in split view", async () => {
+test("DiffRenderable - no newline at end of file in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1419,7 +1422,7 @@ test("DiffRenderable - no newline at end of file in split view", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view with no newline marker")
+  await assertSnapshot(t, frame)
 
   // Both sides should show their respective versions
   expect(frame).toContain("line3")
@@ -1431,7 +1434,7 @@ test("DiffRenderable - no newline at end of file in split view", async () => {
   expect(markerLines.length).toBe(0)
 })
 
-test("DiffRenderable - asymmetric block with more removes than adds in split view", async () => {
+test("DiffRenderable - asymmetric block with more removes than adds in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1463,7 +1466,7 @@ test("DiffRenderable - asymmetric block with more removes than adds in split vie
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view asymmetric block more removes")
+  await assertSnapshot(t, frame)
 
   // Left side should have all 5 removes
   expect(frame).toContain("remove1")
@@ -1491,7 +1494,7 @@ test("DiffRenderable - asymmetric block with more removes than adds in split vie
   // We can verify this by checking that context_after appears at similar vertical positions
 })
 
-test("DiffRenderable - asymmetric block with more adds than removes in split view", async () => {
+test("DiffRenderable - asymmetric block with more adds than removes in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1523,7 +1526,7 @@ test("DiffRenderable - asymmetric block with more adds than removes in split vie
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view asymmetric block more adds")
+  await assertSnapshot(t, frame)
 
   // Left side should have 2 removes
   expect(frame).toContain("remove1")
@@ -1545,7 +1548,7 @@ test("DiffRenderable - asymmetric block with more adds than removes in split vie
   expect(contextAfterLines.length).toBeGreaterThanOrEqual(1)
 })
 
-test("DiffRenderable - back-to-back change blocks without context lines in split view", async () => {
+test("DiffRenderable - back-to-back change blocks without context lines in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1576,7 +1579,7 @@ test("DiffRenderable - back-to-back change blocks without context lines in split
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view back-to-back blocks")
+  await assertSnapshot(t, frame)
 
   // All removes should be on left
   expect(frame).toContain("remove1")
@@ -1595,7 +1598,7 @@ test("DiffRenderable - back-to-back change blocks without context lines in split
   expect(frameLines.length).toBeGreaterThan(0)
 })
 
-test("DiffRenderable - very long lines wrapping multiple times in split view", async () => {
+test("DiffRenderable - very long lines wrapping multiple times in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1627,7 +1630,7 @@ test("DiffRenderable - very long lines wrapping multiple times in split view", a
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("split view multi-wrap lines")
+  await assertSnapshot(t, frame)
 
   // Both versions of the long line should be present
   expect(frame).toContain("extremely long line")
@@ -1646,7 +1649,7 @@ test("DiffRenderable - very long lines wrapping multiple times in split view", a
   expect(shortLineMatches.length).toBeGreaterThanOrEqual(1)
 })
 
-test("DiffRenderable - rapid diff updates trigger microtask coalescing", async () => {
+test("DiffRenderable - rapid diff updates trigger microtask coalescing", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1688,7 +1691,7 @@ test("DiffRenderable - rapid diff updates trigger microtask coalescing", async (
   expect(frame).not.toContain("oldFunction")
 })
 
-test("DiffRenderable - explicit content background colors differ from gutter", async () => {
+test("DiffRenderable - explicit content background colors differ from gutter", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1734,7 +1737,7 @@ test("DiffRenderable - explicit content background colors differ from gutter", a
   expect(frame2).toContain("function hello")
 })
 
-test("DiffRenderable - malformed diff string handled gracefully", async () => {
+test("DiffRenderable - malformed diff string handled gracefully", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1764,7 +1767,7 @@ Without proper headers`
   expect(diffRenderable.diff).toBe(malformedDiff)
 })
 
-test("DiffRenderable - invalid diff format shows error with raw diff", async () => {
+test("DiffRenderable - invalid diff format shows error with raw diff", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1794,7 +1797,7 @@ test("DiffRenderable - invalid diff format shows error with raw diff", async () 
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("invalid diff format with error")
+  await assertSnapshot(t, frame)
 
   // Should contain error message (the error from parsePatch)
   expect(frame).toContain("Unknown line")
@@ -1804,7 +1807,7 @@ test("DiffRenderable - invalid diff format shows error with raw diff", async () 
   expect(frame).toContain("function hello")
 })
 
-test("DiffRenderable - diff with only context lines (no changes)", async () => {
+test("DiffRenderable - diff with only context lines (no changes)", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1832,7 +1835,7 @@ test("DiffRenderable - diff with only context lines (no changes)", async () => {
   await renderOnce()
 
   const frame = captureFrame()
-  expect(frame).toMatchSnapshot("diff with only context lines")
+  await assertSnapshot(t, frame)
 
   // All lines should be present as context
   expect(frame).toContain("line1")
@@ -1847,7 +1850,7 @@ test("DiffRenderable - diff with only context lines (no changes)", async () => {
   expect(changedLines.length).toBe(0)
 })
 
-test("DiffRenderable - should not leak listeners on unified view updates", async () => {
+test("DiffRenderable - should not leak listeners on unified view updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1883,7 +1886,7 @@ test("DiffRenderable - should not leak listeners on unified view updates", async
   expect(finalListenerCount).toBe(initialListenerCount)
 })
 
-test("DiffRenderable - should not leak listeners on split view updates", async () => {
+test("DiffRenderable - should not leak listeners on split view updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1925,7 +1928,7 @@ test("DiffRenderable - should not leak listeners on split view updates", async (
   expect(rightFinalCount).toBe(rightInitialCount)
 })
 
-test("DiffRenderable - should not leak listeners when switching views", async () => {
+test("DiffRenderable - should not leak listeners when switching views", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -1962,7 +1965,7 @@ test("DiffRenderable - should not leak listeners when switching views", async ()
   expect(finalLeftCount).toBeLessThanOrEqual(initialLeftCount + 2)
 })
 
-test("DiffRenderable - should not leak listeners on rapid property changes", async () => {
+test("DiffRenderable - should not leak listeners on rapid property changes", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2000,7 +2003,7 @@ test("DiffRenderable - should not leak listeners on rapid property changes", asy
   expect(rightFinalCount).toBe(rightInitialCount)
 })
 
-test("DiffRenderable - can toggle conceal with markdown diff", async () => {
+test("DiffRenderable - can toggle conceal with markdown diff", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2045,7 +2048,7 @@ test("DiffRenderable - can toggle conceal with markdown diff", async () => {
   await renderOnce()
 
   const frameWithConceal = captureFrame()
-  expect(frameWithConceal).toMatchSnapshot("markdown diff with conceal enabled")
+  await assertSnapshot(t, frameWithConceal)
   expect(diffRenderable.conceal).toBe(true)
 
   diffRenderable.conceal = false
@@ -2057,7 +2060,7 @@ test("DiffRenderable - can toggle conceal with markdown diff", async () => {
   await renderOnce()
 
   const frameWithoutConceal = captureFrame()
-  expect(frameWithoutConceal).toMatchSnapshot("markdown diff with conceal disabled")
+  await assertSnapshot(t, frameWithoutConceal)
   expect(diffRenderable.conceal).toBe(false)
 
   expect(frameWithConceal).not.toBe(frameWithoutConceal)
@@ -2073,7 +2076,7 @@ test("DiffRenderable - can toggle conceal with markdown diff", async () => {
   expect(frameWithConcealAgain).toBe(frameWithConceal)
 })
 
-test("DiffRenderable - conceal works in split view", async () => {
+test("DiffRenderable - conceal works in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2116,7 +2119,7 @@ test("DiffRenderable - conceal works in split view", async () => {
   await renderOnce()
 
   const frameWithConceal = captureFrame()
-  expect(frameWithConceal).toMatchSnapshot("split view markdown diff with conceal enabled")
+  await assertSnapshot(t, frameWithConceal)
   expect(diffRenderable.conceal).toBe(true)
 
   diffRenderable.conceal = false
@@ -2127,13 +2130,13 @@ test("DiffRenderable - conceal works in split view", async () => {
   await renderOnce()
 
   const frameWithoutConceal = captureFrame()
-  expect(frameWithoutConceal).toMatchSnapshot("split view markdown diff with conceal disabled")
+  await assertSnapshot(t, frameWithoutConceal)
   expect(diffRenderable.conceal).toBe(false)
 
   expect(frameWithConceal).not.toBe(frameWithoutConceal)
 })
 
-test("DiffRenderable - conceal defaults to false when not specified", async () => {
+test("DiffRenderable - conceal defaults to false when not specified", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2154,7 +2157,7 @@ test("DiffRenderable - conceal defaults to false when not specified", async () =
   expect(diffRenderable.conceal).toBe(false)
 })
 
-test("DiffRenderable - should handle resize with wrapping without leaking listeners", async () => {
+test("DiffRenderable - should handle resize with wrapping without leaking listeners", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2193,7 +2196,7 @@ test("DiffRenderable - should handle resize with wrapping without leaking listen
   expect(rightFinalCount).toBe(rightInitialCount)
 })
 
-test("DiffRenderable - gutter configuration updates work correctly", async () => {
+test("DiffRenderable - gutter configuration updates work correctly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2240,7 +2243,7 @@ test("DiffRenderable - gutter configuration updates work correctly", async () =>
   expect(frame).toContain("Hello4") // Last update should be visible
 })
 
-test("DiffRenderable - target remains functional after multiple updates", async () => {
+test("DiffRenderable - target remains functional after multiple updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2292,7 +2295,7 @@ test("DiffRenderable - target remains functional after multiple updates", async 
   rightCodeRenderable.off("line-info-change", rightListener)
 })
 
-test("DiffRenderable - gutter remains in correct position after updates", async () => {
+test("DiffRenderable - gutter remains in correct position after updates", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2336,7 +2339,7 @@ test("DiffRenderable - gutter remains in correct position after updates", async 
   }
 })
 
-test("DiffRenderable - properly cleans up listeners on destroy", async () => {
+test("DiffRenderable - properly cleans up listeners on destroy", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2385,7 +2388,7 @@ test("DiffRenderable - properly cleans up listeners on destroy", async () => {
   }
 })
 
-test("DiffRenderable - line numbers update correctly after resize causes wrapping changes", async () => {
+test("DiffRenderable - line numbers update correctly after resize causes wrapping changes", async (t) => {
   const testRenderer = await createTestRenderer({ width: 120, height: 40 })
   const renderer = testRenderer.renderer
   const renderOnce = testRenderer.renderOnce
@@ -2428,7 +2431,7 @@ test("DiffRenderable - line numbers update correctly after resize causes wrappin
   leftCodeRenderable.on("line-info-change", lineInfoChangeListener)
 
   const frameBefore = captureFrame()
-  expect(frameBefore).toMatchSnapshot("before resize - line numbers with no wrapping")
+  await assertSnapshot(t, frameBefore)
 
   const lineInfoBefore = leftCodeRenderable.lineInfo
   expect(lineInfoBefore.lineSources).toEqual([0, 1, 2, 3, 4])
@@ -2449,7 +2452,7 @@ test("DiffRenderable - line numbers update correctly after resize causes wrappin
   await renderOnce()
 
   const frameAfter = captureFrame()
-  expect(frameAfter).toMatchSnapshot("after resize - line numbers with wrapping")
+  await assertSnapshot(t, frameAfter)
 
   const lineInfoAfter = leftCodeRenderable.lineInfo
   expect(lineInfoAfter.lineSources).toEqual([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4])
@@ -2480,7 +2483,7 @@ test("DiffRenderable - line numbers update correctly after resize causes wrappin
   renderer.destroy()
 })
 
-test("DiffRenderable - fg prop is passed to CodeRenderable on construction", async () => {
+test("DiffRenderable - fg prop is passed to CodeRenderable on construction", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2506,7 +2509,7 @@ test("DiffRenderable - fg prop is passed to CodeRenderable on construction", asy
   expect(leftCodeRenderable.fg).toEqual(RGBA.fromHex(customFg))
 })
 
-test("DiffRenderable - fg prop can be updated via setter", async () => {
+test("DiffRenderable - fg prop can be updated via setter", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2535,7 +2538,7 @@ test("DiffRenderable - fg prop can be updated via setter", async () => {
   expect(leftCodeRenderable.fg).toEqual(RGBA.fromHex(updatedFg))
 })
 
-test("DiffRenderable - fg prop is passed to both CodeRenderables in split view", async () => {
+test("DiffRenderable - fg prop is passed to both CodeRenderables in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2565,7 +2568,7 @@ test("DiffRenderable - fg prop is passed to both CodeRenderables in split view",
   expect(rightCodeRenderable.fg).toEqual(RGBA.fromHex(customFg))
 })
 
-test("DiffRenderable - fg prop updates both CodeRenderables in split view", async () => {
+test("DiffRenderable - fg prop updates both CodeRenderables in split view", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2596,7 +2599,7 @@ test("DiffRenderable - fg prop updates both CodeRenderables in split view", asyn
   expect(rightCodeRenderable.fg).toEqual(RGBA.fromHex(updatedFg))
 })
 
-test("DiffRenderable - fg prop defaults to undefined when not specified", async () => {
+test("DiffRenderable - fg prop defaults to undefined when not specified", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2616,7 +2619,7 @@ test("DiffRenderable - fg prop defaults to undefined when not specified", async 
   expect(diffRenderable.fg).toBeUndefined()
 })
 
-test("DiffRenderable - fg prop can be set to undefined to clear it", async () => {
+test("DiffRenderable - fg prop can be set to undefined to clear it", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2643,7 +2646,7 @@ test("DiffRenderable - fg prop can be set to undefined to clear it", async () =>
   expect(diffRenderable.fg).toBeUndefined()
 })
 
-test("DiffRenderable - fg prop accepts RGBA directly", async () => {
+test("DiffRenderable - fg prop accepts RGBA directly", async (t) => {
   const syntaxStyle = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 1, 1, 1) },
   })
@@ -2668,7 +2671,7 @@ test("DiffRenderable - fg prop accepts RGBA directly", async () => {
   expect(leftCodeRenderable.fg).toEqual(customFg)
 })
 
-test("DiffRenderable - split view with word wrapping: changing diff content should not misalign sides", async () => {
+test("DiffRenderable - split view with word wrapping: changing diff content should not misalign sides", async (t) => {
   const { BoxRenderable } = await import("./Box")
   const { parseColor } = await import("../lib/RGBA")
 
@@ -2805,22 +2808,22 @@ test("DiffRenderable - split view with word wrapping: changing diff content shou
   })
 
   parentContainer1.add(correctDiff)
-  await Bun.sleep(200)
+  await sleep(200)
 
   // Press V - toggle to split view
   correctDiff.view = "split"
-  await Bun.sleep(200)
+  await sleep(200)
 
   // Press W - toggle to word wrap
   correctDiff.wrapMode = "word"
-  await Bun.sleep(500)
+  await sleep(500)
 
   const correctFrame = captureFrame()
 
   // Clean up
   parentContainer1.destroyRecursively()
   renderer.root.remove("parent-container-1")
-  await Bun.sleep(100)
+  await sleep(100)
 
   // PART 2: BUGGY PATH
   // Start with calculatorDiff, view="unified", wrapMode="none"
@@ -2857,21 +2860,21 @@ test("DiffRenderable - split view with word wrapping: changing diff content shou
   })
 
   parentContainer2.add(buggyDiff)
-  await Bun.sleep(200)
+  await sleep(200)
 
   // Press V - toggle to split view
   buggyDiff.view = "split"
-  await Bun.sleep(200)
+  await sleep(200)
 
   // Press W - toggle to word wrap
   buggyDiff.wrapMode = "word"
-  await Bun.sleep(200)
+  await sleep(200)
 
   // Press C - change diff content to textDemoDiff
   // THIS IS WHERE THE BUG MANIFESTS - lineInfo is STALE
   buggyDiff.diff = textDemoDiff
   buggyDiff.filetype = "typescript"
-  await Bun.sleep(500)
+  await sleep(500)
 
   const buggyFrame = captureFrame()
 

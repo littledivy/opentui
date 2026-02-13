@@ -1,4 +1,7 @@
-import { test, expect, beforeEach, afterEach, describe, spyOn } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
+import { spy, stub, type Spy, type Stub } from "jsr:@std/testing/mock"
 import { Buffer } from "node:buffer"
 import { createTestRenderer, type TestRenderer, type MockInput, type MockMouse } from "../testing/test-renderer"
 import { Renderable } from "../Renderable"
@@ -13,7 +16,7 @@ let renderer: TestRenderer
 let mockInput: MockInput
 let mockMouse: MockMouse
 let renderOnce: () => Promise<void>
-let restoreSpy: ReturnType<typeof spyOn>
+let restoreSpy: Spy<any> | Stub<any>
 
 beforeEach(async () => {
   await new Promise((resolve) => setTimeout(resolve, 15))
@@ -21,15 +24,15 @@ beforeEach(async () => {
     useMouse: true,
   }))
 
-  // Spy on restoreTerminalModes — spyOn wraps the real method, tracks calls,
-  // and mockRestore() in afterEach puts the original back on the singleton.
+  // Spy on restoreTerminalModes — spy wraps the real method, tracks calls,
+  // and restore() in afterEach puts the original back on the singleton.
   // No capability mocks are needed: the sequences under test (\x1b[I, \x1b[O)
   // are not capability responses and never reach processCapabilityResponse.
-  restoreSpy = spyOn(renderer.lib, "restoreTerminalModes")
+  restoreSpy = spy(renderer.lib, "restoreTerminalModes")
 })
 
 afterEach(() => {
-  restoreSpy.mockRestore()
+  restoreSpy.restore()
   renderer.destroy()
 })
 
@@ -38,20 +41,21 @@ describe("focus restore - terminal mode re-enable on focus-in", () => {
     renderer.stdin.emit("data", Buffer.from("\x1b[I"))
     await new Promise((resolve) => setTimeout(resolve, 15))
 
-    expect(restoreSpy).toHaveBeenCalledTimes(1)
+    expect(restoreSpy.calls.length).toBe(1)
   })
 
   test("restoreTerminalModes is NOT called on blur event", async () => {
     renderer.stdin.emit("data", Buffer.from("\x1b[O"))
     await new Promise((resolve) => setTimeout(resolve, 15))
 
-    expect(restoreSpy).toHaveBeenCalledTimes(0)
+    expect(restoreSpy.calls.length).toBe(0)
   })
 
   test("restoreTerminalModes is called before focus event is emitted", async () => {
     const callOrder: string[] = []
 
-    restoreSpy.mockImplementation((...args: any[]) => {
+    restoreSpy.restore()
+    restoreSpy = stub(renderer.lib, "restoreTerminalModes", (..._args: any[]) => {
       callOrder.push("restoreTerminalModes")
     })
 
@@ -79,7 +83,7 @@ describe("focus restore - terminal mode re-enable on focus-in", () => {
     renderer.stdin.emit("data", Buffer.from("\x1b[I"))
     await new Promise((resolve) => setTimeout(resolve, 15))
 
-    expect(restoreSpy).toHaveBeenCalledTimes(2)
+    expect(restoreSpy.calls.length).toBe(2)
   })
 
   test("focus-in emits focus event on the renderer", async () => {
@@ -148,7 +152,7 @@ describe("focus restore - terminal mode re-enable on focus-in", () => {
     await new Promise((resolve) => setTimeout(resolve, 15))
 
     // Verify restoreTerminalModes was called
-    expect(restoreSpy).toHaveBeenCalledTimes(1)
+    expect(restoreSpy.calls.length).toBe(1)
 
     // Verify mouse still works after focus restore
     await mockMouse.click(5, 5)
@@ -195,6 +199,6 @@ describe("focus restore - terminal mode re-enable on focus-in", () => {
     }
     await new Promise((resolve) => setTimeout(resolve, 15))
 
-    expect(restoreSpy).toHaveBeenCalledTimes(10)
+    expect(restoreSpy.calls.length).toBe(10)
   })
 })

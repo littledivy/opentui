@@ -1,7 +1,10 @@
-import { test, expect, beforeEach, afterEach, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, beforeEach, afterEach, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../testing/test-renderer"
 import { BoxRenderable } from "../renderables/Box"
 import { TextRenderable } from "../renderables/Text"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let testRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -23,7 +26,7 @@ afterEach(() => {
 })
 
 describe("Renderable - insertBefore", () => {
-  test("reproduces insertBefore behavior with state change after timeout", async () => {
+  test("reproduces insertBefore behavior with state change after timeout", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -60,7 +63,7 @@ describe("Renderable - insertBefore", () => {
     await renderOnce()
 
     const initialFrame = captureFrame()
-    expect(initialFrame).toMatchSnapshot("insertBefore initial state")
+    await assertSnapshot(t, initialFrame)
 
     await new Promise((resolve) => setTimeout(resolve, 100))
 
@@ -69,10 +72,10 @@ describe("Renderable - insertBefore", () => {
     await renderOnce()
 
     const reorderedFrame = captureFrame()
-    expect(reorderedFrame).toMatchSnapshot("insertBefore reordered state")
+    await assertSnapshot(t, reorderedFrame)
   })
 
-  test("ensure .add with index works correctly", async () => {
+  test("ensure .add with index works correctly", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 20,
@@ -126,7 +129,7 @@ describe("Renderable - insertBefore", () => {
 })
 
 describe("Renderable - add method", () => {
-  test("basic add appends to end", async () => {
+  test("basic add appends to end", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -148,7 +151,7 @@ describe("Renderable - add method", () => {
     expect(children[2]?.id).toBe("item-3")
   })
 
-  test("add with index 0 inserts at beginning", async () => {
+  test("add with index 0 inserts at beginning", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -170,7 +173,7 @@ describe("Renderable - add method", () => {
     expect(children[2]?.id).toBe("item-2")
   })
 
-  test("add with middle index inserts correctly", async () => {
+  test("add with middle index inserts correctly", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -192,7 +195,7 @@ describe("Renderable - add method", () => {
     expect(children[2]?.id).toBe("item-2")
   })
 
-  test("add with large index appends to end", async () => {
+  test("add with large index appends to end", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -214,7 +217,7 @@ describe("Renderable - add method", () => {
     expect(children[2]?.id).toBe("item-3")
   })
 
-  test("add returns correct index", async () => {
+  test("add returns correct index", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -234,7 +237,7 @@ describe("Renderable - add method", () => {
     expect(idx3).toBe(1) // Inserted at index 1
   })
 
-  test("add null/undefined returns -1", async () => {
+  test("add null/undefined returns -1", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -249,7 +252,7 @@ describe("Renderable - add method", () => {
     expect(container.getChildrenCount()).toBe(0)
   })
 
-  test("re-adding existing child moves it", async () => {
+  test("re-adding existing child moves it", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -283,7 +286,7 @@ describe("Renderable - add method", () => {
     expect(children[2]?.id).toBe("item-1")
   })
 
-  test("adding child from another parent removes it from old parent", async () => {
+  test("adding child from another parent removes it from old parent", async (t) => {
     const container1 = new BoxRenderable(testRenderer, {
       id: "container-1",
       width: 10,
@@ -310,7 +313,7 @@ describe("Renderable - add method", () => {
 })
 
 describe("Renderable - insertBefore method", () => {
-  test("insertBefore with null anchor appends to end", async () => {
+  test("insertBefore with null anchor appends to end", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -330,7 +333,7 @@ describe("Renderable - insertBefore method", () => {
     expect(children[2]?.id).toBe("item-3")
   })
 
-  test("insertBefore inserts at correct position", async () => {
+  test("insertBefore inserts at correct position", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -352,7 +355,7 @@ describe("Renderable - insertBefore method", () => {
     expect(children[2]?.id).toBe("item-3")
   })
 
-  test("insertBefore at beginning", async () => {
+  test("insertBefore at beginning", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -374,7 +377,7 @@ describe("Renderable - insertBefore method", () => {
     expect(children[2]?.id).toBe("item-2")
   })
 
-  test("insertBefore moves existing child", async () => {
+  test("insertBefore moves existing child", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -408,7 +411,7 @@ describe("Renderable - insertBefore method", () => {
     expect(children[2]?.id).toBe("item-2")
   })
 
-  test("insertBefore with invalid anchor returns -1", async () => {
+  test("insertBefore with invalid anchor returns -1", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -424,7 +427,7 @@ describe("Renderable - insertBefore method", () => {
     expect(container.insertBefore(item2, notAChild)).toBe(-1)
   })
 
-  test("insertBefore returns correct index", async () => {
+  test("insertBefore returns correct index", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -442,7 +445,7 @@ describe("Renderable - insertBefore method", () => {
     expect(idx).toBe(1)
   })
 
-  test("insertBefore with null object returns -1", async () => {
+  test("insertBefore with null object returns -1", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -456,7 +459,7 @@ describe("Renderable - insertBefore method", () => {
     expect(idx).toBe(-1)
   })
 
-  test("complex reordering scenario", async () => {
+  test("complex reordering scenario", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,
@@ -493,7 +496,7 @@ describe("Renderable - insertBefore method", () => {
     expect(children.map((c) => c.id)).toEqual(["C", "E", "B", "A", "D"])
   })
 
-  test("multiple sequential adds and inserts", async () => {
+  test("multiple sequential adds and inserts", async (t) => {
     const container = new BoxRenderable(testRenderer, {
       id: "container",
       width: 10,

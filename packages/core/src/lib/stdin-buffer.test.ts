@@ -1,4 +1,6 @@
-import { describe, expect, it, beforeEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it, beforeEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { StdinBuffer } from "./stdin-buffer"
 
 describe("StdinBuffer", () => {

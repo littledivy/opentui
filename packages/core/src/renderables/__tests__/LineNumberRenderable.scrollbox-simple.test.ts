@@ -1,10 +1,13 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test"
+import "../../testing/test-setup.ts"
+import { describe, test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../../testing"
 import { LineNumberRenderable } from "../LineNumberRenderable"
 import { CodeRenderable } from "../Code"
 import { ScrollBoxRenderable } from "../ScrollBox"
 import { SyntaxStyle } from "../../syntax-style"
 import { RGBA } from "../../lib/RGBA"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -24,7 +27,7 @@ afterEach(async () => {
 })
 
 describe("LineNumber in ScrollBox - Simple Core Test", () => {
-  test("LineNumber with Code in ScrollBox should wrap content height", async () => {
+  test("LineNumber with Code in ScrollBox should wrap content height", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -61,7 +64,7 @@ describe("LineNumber in ScrollBox - Simple Core Test", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(t, frame)
 
     expect(codeRenderable.lineCount).toBe(3)
 
@@ -77,7 +80,7 @@ describe("LineNumber in ScrollBox - Simple Core Test", () => {
     expect(frame).toContain("return true")
   })
 
-  test("Multiple LineNumber blocks in ScrollBox should each wrap content", async () => {
+  test("Multiple LineNumber blocks in ScrollBox should each wrap content", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -130,7 +133,7 @@ describe("LineNumber in ScrollBox - Simple Core Test", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(t, frame)
 
     expect(lineNum1.height).toBe(1)
     expect(code1.height).toBe(1)

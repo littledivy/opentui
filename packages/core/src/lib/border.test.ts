@@ -1,4 +1,7 @@
-import { test, expect, describe, spyOn, afterEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
+import { stub, type Stub } from "jsr:@std/testing/mock"
 import { isValidBorderStyle, parseBorderStyle, type BorderStyle } from "./border"
 
 describe("isValidBorderStyle", () => {
@@ -21,10 +24,10 @@ describe("isValidBorderStyle", () => {
 })
 
 describe("parseBorderStyle", () => {
-  let warnSpy: ReturnType<typeof spyOn>
+  let warnSpy: Stub<Console>
 
   afterEach(() => {
-    warnSpy?.mockRestore()
+    warnSpy?.restore()
   })
 
   test("returns valid border styles unchanged", () => {
@@ -35,7 +38,7 @@ describe("parseBorderStyle", () => {
   })
 
   test("falls back to 'single' for invalid string values", () => {
-    warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    warnSpy = stub(console, "warn", () => {})
 
     expect(parseBorderStyle("invalid")).toBe("single")
     expect(parseBorderStyle("")).toBe("single")
@@ -44,7 +47,7 @@ describe("parseBorderStyle", () => {
   })
 
   test("falls back to custom fallback for invalid values", () => {
-    warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    warnSpy = stub(console, "warn", () => {})
 
     expect(parseBorderStyle("invalid", "double")).toBe("double")
     expect(parseBorderStyle("invalid", "rounded")).toBe("rounded")
@@ -52,27 +55,27 @@ describe("parseBorderStyle", () => {
   })
 
   test("falls back silently for undefined/null without warning", () => {
-    warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    warnSpy = stub(console, "warn", () => {})
 
     expect(parseBorderStyle(undefined)).toBe("single")
     expect(parseBorderStyle(null)).toBe("single")
-    expect(warnSpy).not.toHaveBeenCalled()
+    expect(warnSpy.calls.length).toBe(0)
   })
 
   test("logs warning for invalid non-null/undefined values", () => {
-    warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+    warnSpy = stub(console, "warn", () => {})
 
     parseBorderStyle("invalid-style")
 
-    expect(warnSpy).toHaveBeenCalledTimes(1)
-    expect(warnSpy).toHaveBeenCalledWith(
+    expect(warnSpy.calls.length).toBe(1)
+    expect(warnSpy.calls[0]?.args[0]).toBe(
       'Invalid borderStyle "invalid-style", falling back to "single". Valid values are: single, double, rounded, heavy',
     )
   })
 
   describe("regression: does not crash with unexpected value types", () => {
     test("handles invalid values", () => {
-      warnSpy = spyOn(console, "warn").mockImplementation(() => {})
+      warnSpy = stub(console, "warn", () => {})
 
       expect(parseBorderStyle(123 as unknown as BorderStyle)).toBe("single")
       expect(parseBorderStyle({} as unknown as BorderStyle)).toBe("single")

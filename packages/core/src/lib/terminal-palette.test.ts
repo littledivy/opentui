@@ -1,6 +1,8 @@
-import { test, expect } from "bun:test"
+import "../testing/test-setup.ts"
+import { test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { TerminalPalette } from "./terminal-palette"
-import { EventEmitter } from "events"
+import { EventEmitter } from "node:events"
 import { Buffer } from "node:buffer"
 
 class MockStream extends EventEmitter {

@@ -9,14 +9,14 @@ import {
   type WidthMethod,
 } from "./types"
 import { RGBA, parseColor, type ColorInput } from "./lib/RGBA"
-import type { Pointer } from "bun:ffi"
+import type { Pointer } from "./zig-structs"
 import { OptimizedBuffer } from "./buffer"
 import { resolveRenderLib, type RenderLib } from "./zig"
 import { TerminalConsole, type ConsoleOptions, capture } from "./console"
 import { MouseParser, type MouseEventType, type RawMouseEvent, type ScrollInfo } from "./lib/parse.mouse"
 import { Selection } from "./lib/selection"
 import { Clipboard, type ClipboardTarget } from "./lib/clipboard"
-import { EventEmitter } from "events"
+import { EventEmitter } from "node:events"
 import { destroySingleton, hasSingleton, singleton } from "./lib/singleton"
 import { getObjectsInViewport } from "./lib/objects-in-viewport"
 import { KeyHandler, InternalKeyHandler } from "./lib/KeyHandler"
@@ -472,7 +472,7 @@ export class CliRenderer extends EventEmitter implements RenderContext {
   private exitHandler: () => void = (() => {
     this.destroy()
     if (env.OTUI_DUMP_CAPTURES) {
-      Bun.sleep(100).then(() => {
+      new Promise(r => setTimeout(r, 100)).then(() => {
         this.dumpOutputCache("=== CAPTURED OUTPUT ===\n")
       })
     }
@@ -621,7 +621,11 @@ export class CliRenderer extends EventEmitter implements RenderContext {
     if (this._exitListenersAdded || this.exitSignals.length === 0) return
 
     this.exitSignals.forEach((signal) => {
-      process.addListener(signal, this.exitHandler)
+      try {
+        process.addListener(signal, this.exitHandler)
+      } catch {
+        // Some signals (e.g. SIGFPE, SIGBUS) may not be supported on all runtimes
+      }
     })
 
     this._exitListenersAdded = true
@@ -631,7 +635,11 @@ export class CliRenderer extends EventEmitter implements RenderContext {
     if (!this._exitListenersAdded || this.exitSignals.length === 0) return
 
     this.exitSignals.forEach((signal) => {
-      process.removeListener(signal, this.exitHandler)
+      try {
+        process.removeListener(signal, this.exitHandler)
+      } catch {
+        // Signal may not have been registered
+      }
     })
 
     this._exitListenersAdded = false

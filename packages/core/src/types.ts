@@ -1,5 +1,5 @@
 import type { RGBA } from "./lib/RGBA"
-import type { EventEmitter } from "events"
+import type { EventEmitter } from "node:events"
 import type { Selection } from "./lib/selection"
 import type { Renderable } from "./Renderable"
 import type { InternalKeyHandler, KeyHandler } from "./lib/KeyHandler"

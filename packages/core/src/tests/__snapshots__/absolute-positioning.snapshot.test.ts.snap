@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolute positioned box at top-left: absolute positioned box at top-left 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Basic absolute positioning > absolute positioned box at top-left 1`] = `
 "┌─────────────┐                         
 │Top Left     │                         
 │             │                         
@@ -24,7 +24,7 @@ exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolu
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolute positioned box at bottom-right using right/bottom: absolute positioned box at bottom-right 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Basic absolute positioning > absolute positioned box at bottom-right using right/bottom 1`] = `
 "                                        
                                         
                                         
@@ -48,7 +48,7 @@ exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolu
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolute positioned box centered with left/top: absolute positioned box centered 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Basic absolute positioning > absolute positioned box centered with left/top 1`] = `
 "                                        
                                         
                                         
@@ -72,7 +72,7 @@ exports[`Absolute Positioning - Snapshot Tests Basic absolute positioning absolu
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absolute child inside absolute parent - basic: nested absolute - child inside parent at left/top 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Nested absolute positioning > absolute child inside absolute parent - basic 1`] = `
 "                                        
                                         
                                         
@@ -96,7 +96,7 @@ exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absol
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absolute child at bottom:0 inside absolute parent (issue #406 fix): nested absolute - child at bottom:0 of parent 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Nested absolute positioning > absolute child at bottom:0 inside absolute parent (issue #406 fix) 1`] = `
 "                                        
                                         
      ┌────────────────────────────┐     
@@ -120,7 +120,7 @@ exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absol
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absolute child at right:0 inside absolute parent: nested absolute - child at right:0 of parent 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Nested absolute positioning > absolute child at right:0 inside absolute parent 1`] = `
 "                                        
                                         
   ┌─────────────────────────────────┐   
@@ -144,7 +144,7 @@ exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absol
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absolute child at bottom-right corner inside absolute parent: nested absolute - child at bottom-right corner 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Nested absolute positioning > absolute child at bottom-right corner inside absolute parent 1`] = `
 "                                        
    ┌────────────────────────────────┐   
    │                                │   
@@ -168,7 +168,7 @@ exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning absol
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning multiple absolute children inside absolute parent at different positions: nested absolute - four corners inside parent 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Nested absolute positioning > multiple absolute children inside absolute parent at different positions 1`] = `
 "                                        
   ┌──────────────────────────────────┐  
   │                                  │  
@@ -192,7 +192,7 @@ exports[`Absolute Positioning - Snapshot Tests Nested absolute positioning multi
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Three-level nesting deeply nested absolute positioning - grandchild at bottom: three-level nested absolute - grandchild at bottom 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Three-level nesting > deeply nested absolute positioning - grandchild at bottom 1`] = `
 "                                        
  ┌────────────────────────────────────┐ 
  │                                    │ 
@@ -216,7 +216,7 @@ exports[`Absolute Positioning - Snapshot Tests Three-level nesting deeply nested
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Mixed positioning absolute child inside relative parent: absolute child inside relative parent 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Mixed positioning > absolute child inside relative parent 1`] = `
 "                                        
                                         
    ┌────────────────────────────┐       
@@ -240,7 +240,7 @@ exports[`Absolute Positioning - Snapshot Tests Mixed positioning absolute child 
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Mixed positioning sibling absolute elements at same level: sibling absolute elements overlapping 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Mixed positioning > sibling absolute elements at same level 1`] = `
 "┌─────────────┐                         
 │Box 1        │                         
 │             │                         
@@ -264,7 +264,7 @@ exports[`Absolute Positioning - Snapshot Tests Mixed positioning sibling absolut
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned box with negative coordinates (partially off-screen): absolute box with negative coordinates 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute positioned box with negative coordinates (partially off-screen) 1`] = `
 "              │                         
               │                         
               │                         
@@ -288,7 +288,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned bo
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned box extending beyond viewport: absolute box extending beyond viewport 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute positioned box extending beyond viewport 1`] = `
 "                                        
                                         
                                         
@@ -312,7 +312,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned bo
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child fills parent completely: absolute child fills parent with inset 0 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute child fills parent completely 1`] = `
 "                                        
                                         
                                         
@@ -336,7 +336,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child fills p
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned box with percentage width inside absolute parent: absolute child with percentage width 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute positioned box with percentage width inside absolute parent 1`] = `
 "                                                  
                                                   
      ┌──────────────────────────────────────┐     
@@ -360,7 +360,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned bo
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned box with percentage height inside absolute parent: absolute child with percentage height 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute positioned box with percentage height inside absolute parent 1`] = `
 "                                        
                                         
      ┌────────────────────────────┐     
@@ -384,7 +384,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute positioned bo
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child with conflicting insets (left and right without explicit width): absolute child with left and right insets (no explicit width) 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute child with conflicting insets (left and right without explicit width) 1`] = `
 "                                        
                                         
    ┌────────────────────────────────┐   
@@ -408,7 +408,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child with co
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child with conflicting insets (top and bottom without explicit height): absolute child with top and bottom insets (no explicit height) 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Edge cases > absolute child with conflicting insets (top and bottom without explicit height) 1`] = `
 "                                        
      ┌────────────────────────────┐     
      │                            │     
@@ -432,7 +432,7 @@ exports[`Absolute Positioning - Snapshot Tests Edge cases absolute child with co
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Complex hierarchies relative parent with absolute child containing absolute grandchild: relative -> absolute -> absolute hierarchy 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Complex hierarchies > relative parent with absolute child containing absolute grandchild 1`] = `
 "                                        
   ┌─────────────────────────────────┐   
   │                                 │   
@@ -456,7 +456,7 @@ exports[`Absolute Positioning - Snapshot Tests Complex hierarchies relative pare
 "
 `;
 
-exports[`Absolute Positioning - Snapshot Tests Complex hierarchies multiple nested relative and absolute layers: relative -> absolute -> relative -> absolute hierarchy 1`] = `
+snapshot[`global > Absolute Positioning - Snapshot Tests > Complex hierarchies > multiple nested relative and absolute layers 1`] = `
 "┌────────────────────────────────────┐  
 │                                    │  
 │  ┌──────────────────────────────┐  │  

@@ -1,4 +1,6 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test"
+import { sleep } from "../../testing/test-setup.ts"
+import { describe, it, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer, type MockMouse, type MockInput } from "../../testing/test-renderer"
 import { createTextareaRenderable } from "./renderable-test-utils"
 import { RGBA } from "../../lib/RGBA"
@@ -1371,7 +1373,7 @@ describe("Textarea - Selection Tests", () => {
 
       // Scroll up with mouse wheel
       await currentMouse.scroll(editor.x, editor.y + 1, "up")
-      await Bun.sleep(100)
+      await sleep(100)
 
       const selectionAfter = editor.getSelection()
       const selectedTextAfter = editor.getSelectedText()

@@ -1,9 +1,11 @@
-import { test, expect, describe } from "bun:test"
+import "../testing/test-setup.ts"
+import { test, describe } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer } from "../testing/test-renderer"
-import { EventEmitter } from "events"
+import { EventEmitter } from "node:events"
 import { Buffer } from "node:buffer"
 import { Readable } from "node:stream"
-import tty from "tty"
+import tty from "node:tty"
 
 function createMockStreams() {
   const mockStdin = new Readable({ read() {} }) as tty.ReadStream

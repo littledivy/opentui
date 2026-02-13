@@ -1,8 +1,7 @@
 import { basename, join } from "node:path"
 
 export function isBunfsPath(path: string): boolean {
-  // Removed ambiguous '//' check
-  return path.includes("$bunfs") || /^B:[\\/]~BUN/i.test(path)
+  return path.startsWith("/$bunfs/") || /^B:[/\\]~BUN[/\\]/i.test(path)
 }
 
 export function getBunfsRootPath(): string {

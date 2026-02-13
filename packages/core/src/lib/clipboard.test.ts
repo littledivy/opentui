@@ -1,4 +1,6 @@
-import { describe, expect, it, afterEach } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, it, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../testing/test-renderer"
 import { ClipboardTarget, encodeOsc52Payload } from "./clipboard"
 import type { RenderLib } from "../zig"

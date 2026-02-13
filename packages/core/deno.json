@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable", "esnext"],
+    "strict": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true
+  },
+  "tasks": {
+    "test:js": "deno test --no-check --allow-all --unstable-ffi --unstable-sloppy-imports src/"
+  }
+}

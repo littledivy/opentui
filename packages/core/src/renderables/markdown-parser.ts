@@ -16,7 +16,7 @@ export function parseMarkdownIncremental(
 ): ParseState {
   if (!prevState || prevState.tokens.length === 0) {
     try {
-      const tokens = Lexer.lex(newContent, { gfm: true }) as MarkedToken[]
+      const tokens = [...Lexer.lex(newContent, { gfm: true })] as MarkedToken[]
       return { content: newContent, tokens }
     } catch {
       return { content: newContent, tokens: [] }

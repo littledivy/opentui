@@ -1,10 +1,13 @@
-import { test, expect, beforeEach, afterEach } from "bun:test"
+import "../../testing/test-setup.ts"
+import { test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { MarkdownRenderable } from "../Markdown"
 import { TextRenderable } from "../Text"
 import { SyntaxStyle } from "../../syntax-style"
 import { RGBA } from "../../lib/RGBA"
 import { createTestRenderer, type TestRenderer } from "../../testing"
 import { TextAttributes, type CapturedFrame } from "../../types"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let renderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -46,166 +49,87 @@ async function renderMarkdown(markdown: string, conceal: boolean = true): Promis
   return "\n" + lines.join("\n").trimEnd()
 }
 
-test("basic table alignment", async () => {
+test("basic table alignment", async (t) => {
   const markdown = `| Name | Age |
 |---|---|
 | Alice | 30 |
 | Bob | 5 |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────┬─────┐
-    │Name   │Age  │
-    │───────│─────│
-    │Alice  │30   │
-    │───────│─────│
-    │Bob    │5    │
-    └───────┴─────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with inline code (backticks)", async () => {
+test("table with inline code (backticks)", async (t) => {
   const markdown = `| Command | Description |
 |---|---|
 | \`npm install\` | Install deps |
 | \`npm run build\` | Build project |
 | \`npm test\` | Run tests |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────────────┬───────────────┐
-    │Command        │Description    │
-    │───────────────│───────────────│
-    │npm install    │Install deps   │
-    │───────────────│───────────────│
-    │npm run build  │Build project  │
-    │───────────────│───────────────│
-    │npm test       │Run tests      │
-    └───────────────┴───────────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with bold text", async () => {
+test("table with bold text", async (t) => {
   const markdown = `| Feature | Status |
 |---|---|
 | **Authentication** | Done |
 | **API** | WIP |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌────────────────┬────────┐
-    │Feature         │Status  │
-    │────────────────│────────│
-    │Authentication  │Done    │
-    │────────────────│────────│
-    │API             │WIP     │
-    └────────────────┴────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with italic text", async () => {
+test("table with italic text", async (t) => {
   const markdown = `| Item | Note |
 |---|---|
 | One | *important* |
 | Two | *ok* |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌──────┬───────────┐
-    │Item  │Note       │
-    │──────│───────────│
-    │One   │important  │
-    │──────│───────────│
-    │Two   │ok         │
-    └──────┴───────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with mixed formatting", async () => {
+test("table with mixed formatting", async (t) => {
   const markdown = `| Type | Value | Notes |
 |---|---|---|
 | **Bold** | \`code\` | *italic* |
 | Plain | **strong** | \`cmd\` |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────┬────────┬────────┐
-    │Type   │Value   │Notes   │
-    │───────│────────│────────│
-    │Bold   │code    │italic  │
-    │───────│────────│────────│
-    │Plain  │strong  │cmd     │
-    └───────┴────────┴────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with alignment markers (left, center, right)", async () => {
+test("table with alignment markers (left, center, right)", async (t) => {
   const markdown = `| Left | Center | Right |
 |:---|:---:|---:|
 | A | B | C |
 | Long text | X | Y |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────────┬────────┬───────┐
-    │Left       │Center  │Right  │
-    │───────────│────────│───────│
-    │A          │B       │C      │
-    │───────────│────────│───────│
-    │Long text  │X       │Y      │
-    └───────────┴────────┴───────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with empty cells", async () => {
+test("table with empty cells", async (t) => {
   const markdown = `| A | B |
 |---|---|
 | X |  |
 |  | Y |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───┬───┐
-    │A  │B  │
-    │───│───│
-    │X  │   │
-    │───│───│
-    │   │Y  │
-    └───┴───┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with long header and short content", async () => {
+test("table with long header and short content", async (t) => {
   const markdown = `| Very Long Column Header | Short |
 |---|---|
 | A | B |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌─────────────────────────┬───────┐
-    │Very Long Column Header  │Short  │
-    │─────────────────────────│───────│
-    │A                        │B      │
-    └─────────────────────────┴───────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with short header and long content", async () => {
+test("table with short header and long content", async (t) => {
   const markdown = `| X | Y |
 |---|---|
 | This is very long content | Short |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────────────────────────┬───────┐
-    │X                          │Y      │
-    │───────────────────────────│───────│
-    │This is very long content  │Short  │
-    └───────────────────────────┴───────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table inside code block should NOT be formatted", async () => {
+test("table inside code block should NOT be formatted", async (t) => {
   const markdown = `\`\`\`
 | Not | A | Table |
 |---|---|---|
@@ -216,21 +140,10 @@ test("table inside code block should NOT be formatted", async () => {
 |---|---|
 | Is | Formatted |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    | Not | A | Table |
-    |---|---|---|
-    | Should | Stay | Raw |
-
-    ┌──────┬───────────┐
-    │Real  │Table      │
-    │──────│───────────│
-    │Is    │Formatted  │
-    └──────┴───────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("multiple tables in same document", async () => {
+test("multiple tables in same document", async (t) => {
   const markdown = `| Table1 | A |
 |---|---|
 | X | Y |
@@ -241,256 +154,129 @@ Some text between.
 |---|---|
 | Long content | Z |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌────────┬───┐
-    │Table1  │A  │
-    │────────│───│
-    │X       │Y  │
-    └────────┴───┘
-
-    Some text between.
-
-    ┌──────────────┬────┐
-    │Table2        │BB  │
-    │──────────────│────│
-    │Long content  │Z   │
-    └──────────────┴────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with escaped pipe character", async () => {
+test("table with escaped pipe character", async (t) => {
   const markdown = `| Command | Output |
 |---|---|
 | echo | Hello |
 | ls \\| grep | Filtered |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───────────┬──────────┐
-    │Command    │Output    │
-    │───────────│──────────│
-    │echo       │Hello     │
-    │───────────│──────────│
-    │ls | grep  │Filtered  │
-    └───────────┴──────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with unicode characters", async () => {
+test("table with unicode characters", async (t) => {
   const markdown = `| Emoji | Name |
 |---|---|
 | 🎉 | Party |
 | 🚀 | Rocket |
 | 日本語 | Japanese |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌────────┬──────────┐
-    │Emoji   │Name      │
-    │────────│──────────│
-    │🎉      │Party     │
-    │────────│──────────│
-    │🚀      │Rocket    │
-    │────────│──────────│
-    │日本語  │Japanese  │
-    └────────┴──────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with links", async () => {
+test("table with links", async (t) => {
   const markdown = `| Name | Link |
 |---|---|
 | Google | [link](https://google.com) |
 | GitHub | [gh](https://github.com) |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌────────┬───────────────────────────┐
-    │Name    │Link                       │
-    │────────│───────────────────────────│
-    │Google  │link (https://google.com)  │
-    │────────│───────────────────────────│
-    │GitHub  │gh (https://github.com)    │
-    └────────┴───────────────────────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("single row table (header + delimiter only)", async () => {
+test("single row table (header + delimiter only)", async (t) => {
   const markdown = `| Only | Header |
 |---|---|`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    | Only | Header |
-    |---|---|"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with many columns", async () => {
+test("table with many columns", async (t) => {
   const markdown = `| A | B | C | D | E |
 |---|---|---|---|---|
 | 1 | 2 | 3 | 4 | 5 |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───┬───┬───┬───┬───┐
-    │A  │B  │C  │D  │E  │
-    │───│───│───│───│───│
-    │1  │2  │3  │4  │5  │
-    └───┴───┴───┴───┴───┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("no tables returns original content", async () => {
+test("no tables returns original content", async (t) => {
   const markdown = `# Just a heading
 
 Some paragraph text.
 
 - List item`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Just a heading
-
-    Some paragraph text.
-
-    - List item"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table with nested inline formatting", async () => {
+test("table with nested inline formatting", async (t) => {
   const markdown = `| Description |
 |---|
 | This has **bold and \`code\`** together |
 | And *italic with **nested bold*** |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌─────────────────────────────────┐
-    │Description                      │
-    │─────────────────────────────────│
-    │This has bold and code together  │
-    │─────────────────────────────────│
-    │And italic with nested bold      │
-    └─────────────────────────────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Tests with conceal=false - formatting markers should be visible and columns sized accordingly
 
-test("conceal=false: table with bold text", async () => {
+test("conceal=false: table with bold text", async (t) => {
   const markdown = `| Feature | Status |
 |---|---|
 | **Authentication** | Done |
 | **API** | WIP |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌────────────────────┬────────┐
-    │Feature             │Status  │
-    │────────────────────│────────│
-    │**Authentication**  │Done    │
-    │────────────────────│────────│
-    │**API**             │WIP     │
-    └────────────────────┴────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("conceal=false: table with inline code", async () => {
+test("conceal=false: table with inline code", async (t) => {
   const markdown = `| Command | Description |
 |---|---|
 | \`npm install\` | Install deps |
 | \`npm run build\` | Build project |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌─────────────────┬───────────────┐
-    │Command          │Description    │
-    │─────────────────│───────────────│
-    │\`npm install\`    │Install deps   │
-    │─────────────────│───────────────│
-    │\`npm run build\`  │Build project  │
-    └─────────────────┴───────────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("conceal=false: table with italic text", async () => {
+test("conceal=false: table with italic text", async (t) => {
   const markdown = `| Item | Note |
 |---|---|
 | One | *important* |
 | Two | *ok* |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌──────┬─────────────┐
-    │Item  │Note         │
-    │──────│─────────────│
-    │One   │*important*  │
-    │──────│─────────────│
-    │Two   │*ok*         │
-    └──────┴─────────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("conceal=false: table with mixed formatting", async () => {
+test("conceal=false: table with mixed formatting", async (t) => {
   const markdown = `| Type | Value | Notes |
 |---|---|---|
 | **Bold** | \`code\` | *italic* |
 | Plain | **strong** | \`cmd\` |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌──────────┬────────────┬──────────┐
-    │Type      │Value       │Notes     │
-    │──────────│────────────│──────────│
-    │**Bold**  │\`code\`      │*italic*  │
-    │──────────│────────────│──────────│
-    │Plain     │**strong**  │\`cmd\`     │
-    └──────────┴────────────┴──────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("conceal=false: table with unicode characters", async () => {
+test("conceal=false: table with unicode characters", async (t) => {
   const markdown = `| Emoji | Name |
 |---|---|
 | 🎉 | Party |
 | 🚀 | Rocket |
 | 日本語 | Japanese |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌────────┬──────────┐
-    │Emoji   │Name      │
-    │────────│──────────│
-    │🎉      │Party     │
-    │────────│──────────│
-    │🚀      │Rocket    │
-    │────────│──────────│
-    │日本語  │Japanese  │
-    └────────┴──────────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("conceal=false: basic table alignment", async () => {
+test("conceal=false: basic table alignment", async (t) => {
   const markdown = `| Name | Age |
 |---|---|
 | Alice | 30 |
 | Bob | 5 |`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    ┌───────┬─────┐
-    │Name   │Age  │
-    │───────│─────│
-    │Alice  │30   │
-    │───────│─────│
-    │Bob    │5    │
-    └───────┴─────┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
-test("table with paragraphs before and after", async () => {
+test("table with paragraphs before and after", async (t) => {
   const markdown = `This is a paragraph before the table.
 
 | Name | Age |
@@ -499,49 +285,30 @@ test("table with paragraphs before and after", async () => {
 
 This is a paragraph after the table.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    This is a paragraph before the table.
-
-    ┌───────┬─────┐
-    │Name   │Age  │
-    │───────│─────│
-    │Alice  │30   │
-    └───────┴─────┘
-
-    This is a paragraph after the table."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Code block tests
 
-test("code block with language", async () => {
+test("code block with language", async (t) => {
   const markdown = `\`\`\`typescript
 const x = 1;
 console.log(x);
 \`\`\``
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    const x = 1;
-    console.log(x);"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("code block without language", async () => {
+test("code block without language", async (t) => {
   const markdown = `\`\`\`
 plain code block
 with multiple lines
 \`\`\``
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    plain code block
-    with multiple lines"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("code block mixed with text", async () => {
+test("code block mixed with text", async (t) => {
   const markdown = `Here is some code:
 
 \`\`\`js
@@ -552,19 +319,10 @@ function hello() {
 
 And here is more text after.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Here is some code:
-
-    function hello() {
-      return "world";
-    }
-
-    And here is more text after."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("multiple code blocks", async () => {
+test("multiple code blocks", async (t) => {
   const markdown = `First block:
 
 \`\`\`python
@@ -577,205 +335,133 @@ Second block:
 fn main() {}
 \`\`\``
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    First block:
-
-    print("hello")
-
-    Second block:
-
-    fn main() {}"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("code block in conceal=false mode", async () => {
+test("code block in conceal=false mode", async (t) => {
   const markdown = `\`\`\`js
 const x = 1;
 \`\`\``
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    const x = 1;"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
 // Heading tests
 
-test("headings h1 through h3", async () => {
+test("headings h1 through h3", async (t) => {
   const markdown = `# Heading 1
 
 ## Heading 2
 
 ### Heading 3`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Heading 1
-
-    Heading 2
-
-    Heading 3"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("headings with conceal=false show markers", async () => {
+test("headings with conceal=false show markers", async (t) => {
   const markdown = `# Heading 1
 
 ## Heading 2`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    # Heading 1
-
-    ## Heading 2"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
 // List tests
 
-test("unordered list", async () => {
+test("unordered list", async (t) => {
   const markdown = `- Item one
 - Item two
 - Item three`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    - Item one
-    - Item two
-    - Item three"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("ordered list", async () => {
+test("ordered list", async (t) => {
   const markdown = `1. First item
 2. Second item
 3. Third item`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    1. First item
-    2. Second item
-    3. Third item"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("list with inline formatting", async () => {
+test("list with inline formatting", async (t) => {
   const markdown = `- **Bold** item
 - *Italic* item
 - \`Code\` item`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    - Bold item
-    - Italic item
-    - Code item"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Blockquote tests
 
-test("simple blockquote", async () => {
+test("simple blockquote", async (t) => {
   const markdown = `> This is a quote
 > spanning multiple lines`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    > This is a quote
-    spanning multiple lines"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Inline formatting tests
 
-test("bold text", async () => {
+test("bold text", async (t) => {
   const markdown = `This has **bold** text in it.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    This has bold text in it."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("italic text", async () => {
+test("italic text", async (t) => {
   const markdown = `This has *italic* text in it.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    This has italic text in it."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("inline code", async () => {
+test("inline code", async (t) => {
   const markdown = `Use \`console.log()\` to debug.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Use console.log() to debug."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("mixed inline formatting", async () => {
+test("mixed inline formatting", async (t) => {
   const markdown = `**Bold**, *italic*, and \`code\` together.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Bold, italic, and code together."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("inline formatting with conceal=false", async () => {
+test("inline formatting with conceal=false", async (t) => {
   const markdown = `**Bold**, *italic*, and \`code\` together.`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    **Bold**, *italic*, and \`code\` together."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
 // Link tests
 
-test("links with conceal mode", async () => {
+test("links with conceal mode", async (t) => {
   const markdown = `Check out [OpenTUI](https://github.com/sst/opentui) for more.`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Check out OpenTUI (https://github.com/sst/opentui) for more."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("links with conceal=false", async () => {
+test("links with conceal=false", async (t) => {
   const markdown = `Check out [OpenTUI](https://github.com/sst/opentui) for more.`
 
-  expect(await renderMarkdown(markdown, false)).toMatchInlineSnapshot(`
-    "
-    Check out [OpenTUI](https://github.com/sst/opentui) for
-    more."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown, false))
 })
 
 // Horizontal rule
 
-test("horizontal rule", async () => {
+test("horizontal rule", async (t) => {
   const markdown = `Before
 
 ---
 
 After`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Before
-
-    ---
-
-    After"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Complex document
 
-test("complex markdown document", async () => {
+test("complex markdown document", async (t) => {
   const markdown = `# Project Title
 
 Welcome to **OpenTUI**, a terminal UI library.
@@ -802,38 +488,12 @@ Visit [GitHub](https://github.com) for more.
 
 *Press \`?\` for help*`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Project Title
-
-    Welcome to OpenTUI, a terminal UI library.
-
-    Features
-
-    - Automatic table alignment
-    - inline code support
-    - Italic and bold text
-
-
-    Code Example
-
-    const md = new MarkdownRenderable(ctx, {
-      content: "# Hello",
-    })
-
-    Links
-
-    Visit GitHub (https://github.com) for more.
-
-    ---
-
-    Press ? for help"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Custom renderNode tests
 
-test("custom renderNode can override heading rendering", async () => {
+test("custom renderNode can override heading rendering", async (t) => {
   const { TextRenderable } = await import("../Text")
   const { StyledText } = await import("../../lib/styled-text")
 
@@ -869,14 +529,10 @@ Regular paragraph.`,
   const lines = captureFrame()
     .split("\n")
     .map((line) => line.trimEnd())
-  expect("\n" + lines.join("\n").trimEnd()).toMatchInlineSnapshot(`
-    "
-    [CUSTOM] Custom Heading
-    Regular paragraph."
-  `)
+  await assertSnapshot(t, "\n" + lines.join("\n").trimEnd())
 })
 
-test("custom renderNode can override code block rendering", async () => {
+test("custom renderNode can override code block rendering", async (t) => {
   const { BoxRenderable } = await import("../Box")
   const { TextRenderable } = await import("../Text")
 
@@ -911,15 +567,10 @@ const x = 1;
   const lines = captureFrame()
     .split("\n")
     .map((line) => line.trimEnd())
-  expect("\n" + lines.join("\n").trimEnd()).toMatchInlineSnapshot(`
-    "
-    ┌──────────────────────────────────────────────────────────┐
-    │CODE: const x = 1;                                        │
-    └──────────────────────────────────────────────────────────┘"
-  `)
+  await assertSnapshot(t, "\n" + lines.join("\n").trimEnd())
 })
 
-test("custom renderNode returning null uses default", async () => {
+test("custom renderNode returning null uses default", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "custom-null",
     content: `# Heading
@@ -935,111 +586,71 @@ Paragraph text.`,
   const lines = captureFrame()
     .split("\n")
     .map((line) => line.trimEnd())
-  expect("\n" + lines.join("\n").trimEnd()).toMatchInlineSnapshot(`
-    "
-    Heading
-
-    Paragraph text."
-  `)
+  await assertSnapshot(t, "\n" + lines.join("\n").trimEnd())
 })
 
 // Incomplete/invalid markdown tests
 
-test("incomplete code block (no closing fence)", async () => {
+test("incomplete code block (no closing fence)", async (t) => {
   const markdown = `Here is some code:
 
 \`\`\`javascript
 const x = 1;
 console.log(x);`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Here is some code:
-
-    const x = 1;
-    console.log(x);"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("incomplete bold (no closing **)", async () => {
+test("incomplete bold (no closing **)", async (t) => {
   const markdown = `This has **unclosed bold text`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    This has **unclosed bold text"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("incomplete italic (no closing *)", async () => {
+test("incomplete italic (no closing *)", async (t) => {
   const markdown = `This has *unclosed italic text`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    This has *unclosed italic text"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("incomplete link (no closing paren)", async () => {
+test("incomplete link (no closing paren)", async (t) => {
   const markdown = `Check out [this link](https://example.com`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Check out [this link](https://example.com (https://example.
-    com)"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("incomplete table (only header)", async () => {
+test("incomplete table (only header)", async (t) => {
   const markdown = `| Header1 | Header2 |`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    | Header1 | Header2 |"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("incomplete table (header + delimiter, no rows)", async () => {
+test("incomplete table (header + delimiter, no rows)", async (t) => {
   const markdown = `| Header1 | Header2 |
 |---|---|`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    | Header1 | Header2 |
-    |---|---|"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("streaming-like content with partial code block", async () => {
+test("streaming-like content with partial code block", async (t) => {
   const markdown = `# Title
 
 Some text before code.
 
 \`\`\`py`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Title
-
-    Some text before code."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("malformed table with missing pipes", async () => {
+test("malformed table with missing pipes", async (t) => {
   const markdown = `| A | B
 |---|---
 | 1 | 2`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───┬───┐
-    │A  │B  │
-    │───│───│
-    │1  │2  │
-    └───┴───┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("trailing blank lines do not add spacing", async () => {
+test("trailing blank lines do not add spacing", async (t) => {
   const markdown = `# Heading
 
 Paragraph text.
@@ -1047,15 +658,10 @@ Paragraph text.
 
 `
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Heading
-
-    Paragraph text."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("multiple trailing blank lines do not add spacing", async () => {
+test("multiple trailing blank lines do not add spacing", async (t) => {
   const markdown = `First paragraph.
 
 Second paragraph.
@@ -1064,32 +670,20 @@ Second paragraph.
 
 `
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    First paragraph.
-
-    Second paragraph."
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("blank lines between blocks add spacing", async () => {
+test("blank lines between blocks add spacing", async (t) => {
   const markdown = `First
 
 Second
 
 Third`
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    First
-
-    Second
-
-    Third"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("code block at end with trailing blank lines", async () => {
+test("code block at end with trailing blank lines", async (t) => {
   const markdown = `Text before
 
 \`\`\`js
@@ -1098,15 +692,10 @@ const x = 1;
 
 `
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    Text before
-
-    const x = 1;"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
-test("table at end with trailing blank lines", async () => {
+test("table at end with trailing blank lines", async (t) => {
   const markdown = `| A | B |
 |---|---|
 | 1 | 2 |
@@ -1114,18 +703,11 @@ test("table at end with trailing blank lines", async () => {
 
 `
 
-  expect(await renderMarkdown(markdown)).toMatchInlineSnapshot(`
-    "
-    ┌───┬───┐
-    │A  │B  │
-    │───│───│
-    │1  │2  │
-    └───┴───┘"
-  `)
+  await assertSnapshot(t, await renderMarkdown(markdown))
 })
 
 // Incremental parsing tests
-test("incremental update reuses unchanged blocks when appending", async () => {
+test("incremental update reuses unchanged blocks when appending", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello\n\nParagraph 1",
@@ -1148,7 +730,7 @@ test("incremental update reuses unchanged blocks when appending", async () => {
   expect(firstBlockAfter).toBe(firstBlockBefore)
 })
 
-test("streaming mode keeps trailing tokens unstable", async () => {
+test("streaming mode keeps trailing tokens unstable", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello",
@@ -1178,7 +760,7 @@ test("streaming mode keeps trailing tokens unstable", async () => {
   expect(frame2).toContain("Hello World")
 })
 
-test("non-streaming mode parses all tokens as stable", async () => {
+test("non-streaming mode parses all tokens as stable", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello\n\nPara 1\n\nPara 2",
@@ -1195,7 +777,7 @@ test("non-streaming mode parses all tokens as stable", async () => {
   expect(parseState!.tokens.length).toBeGreaterThan(0)
 })
 
-test("content update with same text does not rebuild", async () => {
+test("content update with same text does not rebuild", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello",
@@ -1215,7 +797,7 @@ test("content update with same text does not rebuild", async () => {
   expect(blockAfter).toBe(blockBefore)
 })
 
-test("block type change creates new renderable", async () => {
+test("block type change creates new renderable", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello",
@@ -1236,7 +818,7 @@ test("block type change creates new renderable", async () => {
   expect(blockAfter).not.toBe(blockBefore)
 })
 
-test("streaming property can be toggled", async () => {
+test("streaming property can be toggled", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello",
@@ -1262,7 +844,7 @@ test("streaming property can be toggled", async () => {
   expect(frame).toContain("Hello")
 })
 
-test("clearCache forces full rebuild", async () => {
+test("clearCache forces full rebuild", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello\n\nWorld",
@@ -1282,7 +864,7 @@ test("clearCache forces full rebuild", async () => {
   expect(parseStateAfter).not.toBe(parseStateBefore)
 })
 
-test("table only rebuilds when complete row count changes during streaming", async () => {
+test("table only rebuilds when complete row count changes during streaming", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| A |\n|---|\n| 1 |",
@@ -1311,7 +893,7 @@ test("table only rebuilds when complete row count changes during streaming", asy
   expect(tableAfterNewRow).not.toBe(tableBefore)
 })
 
-test("table shows all rows when streaming is false", async () => {
+test("table shows all rows when streaming is false", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| A |\n|---|\n| 1 |",
@@ -1330,7 +912,7 @@ test("table shows all rows when streaming is false", async () => {
   expect(frame).toContain("1")
 })
 
-test("table updates content when not streaming", async () => {
+test("table updates content when not streaming", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| A |\n|---|\n| 1 |",
@@ -1353,7 +935,7 @@ test("table updates content when not streaming", async () => {
   expect(frame2).not.toContain("1")
 })
 
-test("streaming table with incomplete first row falls back to raw text and updates", async () => {
+test("streaming table with incomplete first row falls back to raw text and updates", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| A |\n|---|\n|",
@@ -1450,7 +1032,7 @@ test("streaming table with incomplete first row falls back to raw text and updat
   expect(frame6).not.toContain("3")
 })
 
-test("streaming table transitions cleanly from raw fallback to proper table", async () => {
+test("streaming table transitions cleanly from raw fallback to proper table", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| Header |",
@@ -1522,7 +1104,7 @@ test("streaming table transitions cleanly from raw fallback to proper table", as
   expect(frame).not.toContain("| D")
 })
 
-test("streaming table can transition back to raw fallback when rows are removed", async () => {
+test("streaming table can transition back to raw fallback when rows are removed", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "| A |\n|---|\n| 1 |\n| 2 |",
@@ -1556,7 +1138,7 @@ test("streaming table can transition back to raw fallback when rows are removed"
   expect(frame).toContain("| 1 |")
 })
 
-test("conceal change updates rendered content", async () => {
+test("conceal change updates rendered content", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "# Hello **bold**",
@@ -1579,7 +1161,7 @@ test("conceal change updates rendered content", async () => {
   expect(frame2).toContain("#")
 })
 
-test("theme switching (syntaxStyle change)", async () => {
+test("theme switching (syntaxStyle change)", async (t) => {
   const theme1 = SyntaxStyle.fromStyles({
     default: { fg: RGBA.fromValues(1, 0, 0, 1) }, // Red
     "markup.heading.1": { fg: RGBA.fromValues(0, 1, 0, 1), bold: true }, // Green
@@ -1718,7 +1300,7 @@ The table alignment uses:
 
 // OSC 8 link metadata tests
 
-test("link chunks include link metadata for OSC 8 hyperlinks (conceal=true)", async () => {
+test("link chunks include link metadata for OSC 8 hyperlinks (conceal=true)", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "Check [Google](https://google.com) out",
@@ -1738,7 +1320,7 @@ test("link chunks include link metadata for OSC 8 hyperlinks (conceal=true)", as
   expect(linkChunks.some((c) => c.text === "https://google.com")).toBe(true)
 })
 
-test("link chunks include link metadata (conceal=false)", async () => {
+test("link chunks include link metadata (conceal=false)", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "Check [Google](https://google.com) out",
@@ -1758,7 +1340,7 @@ test("link chunks include link metadata (conceal=false)", async () => {
   expect(linkChunks.some((c) => c.text === "https://google.com")).toBe(true)
 })
 
-test("image chunks include link metadata", async () => {
+test("image chunks include link metadata", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "![alt](https://example.com/img.png)",
@@ -1775,7 +1357,7 @@ test("image chunks include link metadata", async () => {
   expect(linkChunks.length).toBeGreaterThan(0)
 })
 
-test("non-link text does not have link metadata", async () => {
+test("non-link text does not have link metadata", async (t) => {
   const md = new MarkdownRenderable(renderer, {
     id: "markdown",
     content: "No links here, just **bold** text.",

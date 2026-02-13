@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+export const snapshot = {};
 
-exports[`TextRenderable Selection Text Content Snapshots should render basic text content correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render basic text content correctly 1`] = `
 "                    
                     
                     
@@ -9,7 +9,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render basic tex
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render multiline text content correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render multiline text content correctly 1`] = `
 "                    
  Line 1: Hello      
  Line 2: World      
@@ -18,7 +18,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render multiline
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render text with graphemes/emojis correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render text with graphemes/emojis correctly 1`] = `
 "                    
                     
 Hello 🌍 World 👋   
@@ -27,7 +27,7 @@ Hello 🌍 World 👋
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render TextNode text composition correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render TextNode text composition correctly 1`] = `
 "First Second Third  
                     
                     
@@ -36,7 +36,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render TextNode 
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render text positioning correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render text positioning correctly 1`] = `
 "Top                 
                     
         Mid         
@@ -45,7 +45,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render text posi
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render empty buffer correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render empty buffer correctly 1`] = `
 "                    
                     
                     
@@ -54,7 +54,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render empty buf
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render text with character wrapping correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render text with character wrapping correctly 1`] = `
 "This is a very      
 long text that      
 should wrap to      
@@ -63,7 +63,7 @@ when wrap is en
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render wrapped text with different content 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render wrapped text with different content 1`] = `
 "                    
   ABCDEFGHIJ        
   KLMNOPQRST        
@@ -72,7 +72,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render wrapped t
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render wrapped text with emojis and graphemes 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render wrapped text with emojis and graphemes 1`] = `
 " Hello 🌍 Wor       
  ld 👋 This i       
  s a test wit       
@@ -81,7 +81,7 @@ exports[`TextRenderable Selection Text Content Snapshots should render wrapped t
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render wrapped multiline text correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render wrapped multiline text correctly 1`] = `
 "                    
 First li            
 ne with             
@@ -90,7 +90,7 @@ tent
 "
 `;
 
-exports[`TextRenderable Selection Text Content Snapshots should render text with tab indicator correctly 1`] = `
+snapshot[`TextRenderable Selection > Text Content Snapshots > should render text with tab indicator correctly 1`] = `
 "Line 1→ Tabbed      
 Line 2→ → Double tab
                     
@@ -99,7 +99,7 @@ Line 2→ → Double tab
 "
 `;
 
-exports[`TextRenderable Selection Text Node Dimension Updates should update dimensions and reposition subsequent elements when text nodes expand 1`] = `
+snapshot[`TextRenderable Selection > Text Node Dimension Updates > should update dimensions and reposition subsequent elements when text nodes expand 1`] = `
 "Short               
 Second text         
                     
@@ -108,7 +108,7 @@ Second text
 "
 `;
 
-exports[`TextRenderable Selection Text Node Dimension Updates should update dimensions and reposition subsequent elements when text nodes expand 2`] = `
+snapshot[`TextRenderable Selection > Text Node Dimension Updates > should update dimensions and reposition subsequent elements when text nodes expand 2`] = `
 "Short text that will
  definitely wrap    
 Second text         
@@ -117,7 +117,7 @@ Second text
 "
 `;
 
-exports[`TextRenderable Selection Text Node Dimension Updates should handle multiple text node updates with complex layout changes 1`] = `
+snapshot[`TextRenderable Selection > Text Node Dimension Updates > should handle multiple text node updates with complex layout changes 1`] = `
 "First part          
 Middle text         
 Bottom text         
@@ -131,7 +131,7 @@ Bottom text
 "
 `;
 
-exports[`TextRenderable Selection Text Node Dimension Updates should handle multiple text node updates with complex layout changes 2`] = `
+snapshot[`TextRenderable Selection > Text Node Dimension Updates > should handle multiple text node updates with complex layout changes 2`] = `
 "First of            
 a                   
 sentence            
@@ -145,7 +145,7 @@ Bottom text
 "
 `;
 
-exports[`TextRenderable Selection Width/Height Setter Layout Tests should not shrink box when width is set via setter 1`] = `
+snapshot[`TextRenderable Selection > Width/Height Setter Layout Tests > should not shrink box when width is set via setter 1`] = `
 "┌────────────────────────────┐          
 │>    Content that takes up  │          
 │     space                  │          
@@ -159,7 +159,7 @@ exports[`TextRenderable Selection Width/Height Setter Layout Tests should not sh
 "
 `;
 
-exports[`TextRenderable Selection Width/Height Setter Layout Tests should not shrink box when height is set via setter in column layout with text 1`] = `
+snapshot[`TextRenderable Selection > Width/Height Setter Layout Tests > should not shrink box when height is set via setter in column layout with text 1`] = `
 "┌───────────────────────┐     
 │Header                 │     
 │                       │     
@@ -178,7 +178,7 @@ exports[`TextRenderable Selection Width/Height Setter Layout Tests should not sh
 "
 `;
 
-exports[`TextRenderable Selection Width/Height Setter Layout Tests should not shrink box when minWidth is set via setter 1`] = `
+snapshot[`TextRenderable Selection > Width/Height Setter Layout Tests > should not shrink box when minWidth is set via setter 1`] = `
 "┌────────────────────────────┐          
 │>    Content that takes up  │          
 │     space                  │          
@@ -192,7 +192,7 @@ exports[`TextRenderable Selection Width/Height Setter Layout Tests should not sh
 "
 `;
 
-exports[`TextRenderable Selection Width/Height Setter Layout Tests should not shrink box when minHeight is set via setter in column layout with text 1`] = `
+snapshot[`TextRenderable Selection > Width/Height Setter Layout Tests > should not shrink box when minHeight is set via setter in column layout with text 1`] = `
 "┌───────────────────────┐     
 │Header                 │     
 │                       │     
@@ -211,7 +211,7 @@ exports[`TextRenderable Selection Width/Height Setter Layout Tests should not sh
 "
 `;
 
-exports[`TextRenderable Selection Width/Height Setter Layout Tests should not shrink box when width is set from undefined via setter 1`] = `
+snapshot[`TextRenderable Selection > Width/Height Setter Layout Tests > should not shrink box when width is set from undefined via setter 1`] = `
 "┌────────────────────────────┐          
 │>    Content that takes up  │          
 │     space                  │          
@@ -225,7 +225,7 @@ exports[`TextRenderable Selection Width/Height Setter Layout Tests should not sh
 "
 `;
 
-exports[`TextRenderable Selection Absolute Positioned Box with Text should render text in absolute positioned box with padding and borders correctly 1`] = `
+snapshot[`TextRenderable Selection > Absolute Positioned Box with Text > should render text in absolute positioned box with padding and borders correctly 1`] = `
 "                                                                                
                                                                                 
                   │                                                          │  
@@ -249,7 +249,7 @@ exports[`TextRenderable Selection Absolute Positioned Box with Text should rende
 "
 `;
 
-exports[`TextRenderable Selection Absolute Positioned Box with Text should render text fully visible in absolute positioned box at various positions 1`] = `
+snapshot[`TextRenderable Selection > Absolute Positioned Box with Text > should render text fully visible in absolute positioned box at various positions 1`] = `
 "                                                                                                    
                                                            ┌──────────────────────────────────────┐ 
                                                            │ Error: File not found in the         │ 
@@ -278,7 +278,7 @@ exports[`TextRenderable Selection Absolute Positioned Box with Text should rende
 "
 `;
 
-exports[`TextRenderable Selection Absolute Positioned Box with Text should handle width:100% text in absolute positioned box with constrained maxWidth 1`] = `
+snapshot[`TextRenderable Selection > Absolute Positioned Box with Text > should handle width:100% text in absolute positioned box with constrained maxWidth 1`] = `
 "                                                                      
                                                                       
                                                                       
@@ -297,7 +297,7 @@ exports[`TextRenderable Selection Absolute Positioned Box with Text should handl
 "
 `;
 
-exports[`TextRenderable Selection Absolute Positioned Box with Text should render multiple text elements in absolute positioned box with proper spacing 1`] = `
+snapshot[`TextRenderable Selection > Absolute Positioned Box with Text > should render multiple text elements in absolute positioned box with proper spacing 1`] = `
 "                                                                                          
                                                                                           
                                                                                           
@@ -321,7 +321,7 @@ exports[`TextRenderable Selection Absolute Positioned Box with Text should rende
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should wrap at word boundaries when using word mode 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should wrap at word boundaries when using word mode 1`] = `
 "The quick           
 brown fox           
 jumps over the      
@@ -330,7 +330,7 @@ lazy dog
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should wrap at character boundaries when using char mode 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should wrap at character boundaries when using char mode 1`] = `
 "The quick brown     
  fox jumps over     
  the lazy dog       
@@ -339,7 +339,7 @@ exports[`TextRenderable Selection Word Wrapping should wrap at character boundar
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should handle word wrapping with punctuation 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should handle word wrapping with punctuation 1`] = `
 "Hello,              
 World.              
 Test-               
@@ -348,7 +348,7 @@ Path
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should handle word wrapping with hyphens and dashes 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should handle word wrapping with hyphens and dashes 1`] = `
 "self-               
 contained           
 multi-line          
@@ -357,7 +357,7 @@ wrapping
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should dynamically change wrap mode 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should dynamically change wrap mode 1`] = `
 "The quick           
 brown fox           
 jumps               
@@ -366,7 +366,7 @@ jumps
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should handle long words that exceed wrap width in word mode 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should handle long words that exceed wrap width in word mode 1`] = `
 "ABCDEFGHIJ          
 KLMNOPQRST          
 UVWXYZ              
@@ -375,7 +375,7 @@ UVWXYZ
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should preserve empty lines with word wrapping 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should preserve empty lines with word wrapping 1`] = `
 "First               
 line                
                     
@@ -384,7 +384,7 @@ line
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should handle word wrapping with single character words 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should handle word wrapping with single character words 1`] = `
 "a b c d             
 e f g h             
 i j k l             
@@ -393,7 +393,7 @@ m n o p
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should compare char vs word wrapping with same content 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should compare char vs word wrapping with same content 1`] = `
 "Hello               
 wonderful           
 world of            
@@ -402,7 +402,7 @@ wrapping
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should correctly wrap text when updating content via text.content 1`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should correctly wrap text when updating content via text.content 1`] = `
 "Short text          
                     
                     
@@ -411,7 +411,7 @@ exports[`TextRenderable Selection Word Wrapping should correctly wrap text when 
 "
 `;
 
-exports[`TextRenderable Selection Word Wrapping should correctly wrap text when updating content via text.content 2`] = `
+snapshot[`TextRenderable Selection > Word Wrapping > should correctly wrap text when updating content via text.content 2`] = `
 "This is a much      
 longer text that    
 should definitely   

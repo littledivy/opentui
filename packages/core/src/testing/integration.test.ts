@@ -1,4 +1,6 @@
-import { describe, test, expect } from "bun:test"
+import "./test-setup.ts"
+import { describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createMockMouse, MouseButtons } from "./mock-mouse"
 import { MouseParser } from "../lib/parse.mouse"
 

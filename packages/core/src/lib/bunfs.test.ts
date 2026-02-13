@@ -1,4 +1,6 @@
-import { describe, expect, test } from "bun:test"
+import "../testing/test-setup.ts"
+import { describe, test } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { isBunfsPath, getBunfsRootPath } from "./bunfs"
 
 describe("bunfs", () => {

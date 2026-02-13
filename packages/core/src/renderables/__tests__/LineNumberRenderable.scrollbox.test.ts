@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test"
+import "../../testing/test-setup.ts"
+import { describe, test, beforeEach, afterEach } from "jsr:@std/testing/bdd"
+import { expect } from "jsr:@std/expect"
 import { createTestRenderer, type TestRenderer } from "../../testing"
 import { LineNumberRenderable } from "../LineNumberRenderable"
 import { CodeRenderable } from "../Code"
@@ -6,6 +8,7 @@ import { BoxRenderable } from "../Box"
 import { ScrollBoxRenderable } from "../ScrollBox"
 import { SyntaxStyle } from "../../syntax-style"
 import { RGBA } from "../../lib/RGBA"
+import { assertSnapshot } from "jsr:@std/testing/snapshot"
 
 let currentRenderer: TestRenderer
 let renderOnce: () => Promise<void>
@@ -37,7 +40,7 @@ function generateCode(lineCount: number): string {
 }
 
 describe("LineNumberRenderable in ScrollBox", () => {
-  test("single Code renderable with line numbers in ScrollBox - correct dimensions", async () => {
+  test("single Code renderable with line numbers in ScrollBox - correct dimensions", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -102,10 +105,10 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(lineNumberRenderable.height).toBe(8) // 10 - 2 for borders
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(t, frame)
   })
 
-  test("single Code renderable in ScrollBox - scroll and verify dimensions", async () => {
+  test("single Code renderable in ScrollBox - scroll and verify dimensions", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -157,7 +160,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     const lineNumHeightBeforeScroll = lineNumberRenderable.height
 
     const frameBeforeScroll = captureCharFrame()
-    expect(frameBeforeScroll).toMatchSnapshot()
+    await assertSnapshot(t, frameBeforeScroll)
 
     // Scroll down
     scrollBox.scrollBy(10)
@@ -176,7 +179,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(lineNumHeightAfterScroll).toBe(lineNumHeightBeforeScroll)
 
     const frameAfterScroll = captureCharFrame()
-    expect(frameAfterScroll).toMatchSnapshot()
+    await assertSnapshot(t, frameAfterScroll)
 
     // Scroll to bottom
     scrollBox.scrollBy(1000)
@@ -189,10 +192,10 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(heightAtBottom).toBe(heightBeforeScroll)
 
     const frameAtBottom = captureCharFrame()
-    expect(frameAtBottom).toMatchSnapshot()
+    await assertSnapshot(t, frameAtBottom)
   })
 
-  test("multiple Code renderables with line numbers in ScrollBox - correct dimensions", async () => {
+  test("multiple Code renderables with line numbers in ScrollBox - correct dimensions", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -248,7 +251,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(t, frame1)
 
     // Verify all boxes have correct dimensions
     for (let i = 0; i < 3; i++) {
@@ -271,7 +274,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
 
     // Dimensions should remain stable
     for (let i = 0; i < 3; i++) {
@@ -285,7 +288,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     }
   })
 
-  test("nested boxes with different border styles - dimensions correct", async () => {
+  test("nested boxes with different border styles - dimensions correct", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -348,7 +351,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(t, frame1)
 
     // Check outer box
     expect(outerBox.width).toBe(55)
@@ -373,7 +376,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
 
     expect(lineNumberRenderable.width).toBe(41)
     expect(lineNumberRenderable.height).toBe(11)
@@ -381,7 +384,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(gutter.height).toBe(11)
   })
 
-  test("ScrollBox with horizontal and vertical scrolling - dimensions stable", async () => {
+  test("ScrollBox with horizontal and vertical scrolling - dimensions stable", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -435,6 +438,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     currentRenderer.root.add(scrollBox)
 
     await renderOnce()
+    await renderOnce() // warmup: gutter width stabilizes after 2 frames
 
     const initialWidth = lineNumberRenderable.width
     const initialHeight = lineNumberRenderable.height
@@ -442,7 +446,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     const initialGutterHeight = lineNumberRenderable["gutter"]!.height
 
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(t, frame1)
 
     // Scroll vertically
     scrollBox.scrollBy({ x: 0, y: 10 })
@@ -454,7 +458,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(lineNumberRenderable["gutter"]!.height).toBe(initialGutterHeight)
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
 
     // Scroll horizontally (shouldn't affect line numbers much)
     scrollBox.scrollBy({ x: 20, y: 0 })
@@ -466,7 +470,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(lineNumberRenderable["gutter"]!.height).toBe(initialGutterHeight)
 
     const frame3 = captureCharFrame()
-    expect(frame3).toMatchSnapshot()
+    await assertSnapshot(t, frame3)
 
     // Scroll both
     scrollBox.scrollBy({ x: 10, y: 15 })
@@ -478,10 +482,10 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(lineNumberRenderable["gutter"]!.height).toBe(initialGutterHeight)
 
     const frame4 = captureCharFrame()
-    expect(frame4).toMatchSnapshot()
+    await assertSnapshot(t, frame4)
   })
 
-  test("gutter width changes with line count - verify remeasure", async () => {
+  test("gutter width changes with line count - verify remeasure", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -529,7 +533,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
 
     const widthWith1Digit = lineNumberRenderable["gutter"]!.width
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(t, frame1)
     // minWidth is 2, paddingRight is 1, so minimum is 3 (2 + 1)
     // But also includes +1 for left padding and maxBeforeWidth/maxAfterWidth (0 in this case)
     // So base minimum is 4 total for 1 digit numbers
@@ -541,7 +545,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
 
     const widthWith2Digits = lineNumberRenderable["gutter"]!.width
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
 
     // Width stays the same because minWidth 2 is still enough for 2-digit numbers
     // The gutter width calculation is: max(minWidth, digits + paddingRight + 1)
@@ -556,14 +560,14 @@ describe("LineNumberRenderable in ScrollBox", () => {
 
     const widthWith3Digits = lineNumberRenderable["gutter"]!.width
     const frame3 = captureCharFrame()
-    expect(frame3).toMatchSnapshot()
+    await assertSnapshot(t, frame3)
 
     // Width should increase for 3-digit numbers
     // For 120 lines: max(2, 3 + 1 + 1) = max(2, 5) = 5
     expect(widthWith3Digits).toBeGreaterThan(widthWith2Digits)
   })
 
-  test("line colors span full width in ScrollBox", async () => {
+  test("line colors span full width in ScrollBox", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -615,17 +619,17 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame = captureCharFrame()
-    expect(frame).toMatchSnapshot()
+    await assertSnapshot(t, frame)
 
     // Scroll to make line 5 visible at top
     scrollBox.scrollBy(5)
     await renderOnce()
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
   })
 
-  test("viewport culling with line numbers - dimensions stable", async () => {
+  test("viewport culling with line numbers - dimensions stable", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
@@ -679,7 +683,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     await renderOnce()
 
     const frame1 = captureCharFrame()
-    expect(frame1).toMatchSnapshot()
+    await assertSnapshot(t, frame1)
 
     // Scroll through content
     for (let scroll = 0; scroll < 100; scroll += 10) {
@@ -695,10 +699,10 @@ describe("LineNumberRenderable in ScrollBox", () => {
     }
 
     const frame2 = captureCharFrame()
-    expect(frame2).toMatchSnapshot()
+    await assertSnapshot(t, frame2)
   })
 
-  test("EXPECTED FAILURE: Box width changes unexpectedly on first few renders", async () => {
+  test("EXPECTED FAILURE: Box width changes unexpectedly on first few renders", async (t) => {
     // This test documents a known issue where box widths may flicker on initial renders
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
@@ -761,7 +765,7 @@ describe("LineNumberRenderable in ScrollBox", () => {
     expect(allHeightsSame).toBe(true)
   })
 
-  test("EXPECTED FAILURE: Gutter height may not match parent height initially", async () => {
+  test("EXPECTED FAILURE: Gutter height may not match parent height initially", async (t) => {
     const syntaxStyle = SyntaxStyle.fromStyles({
       default: { fg: RGBA.fromValues(1, 1, 1, 1) },
     })
