@@ -1,9 +1,9 @@
 import { spawnSync, type SpawnSyncReturns } from "node:child_process"
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "fs"
-import { dirname, join, resolve } from "path"
-import { fileURLToPath } from "url"
-import process from "process"
-import path from "path"
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs"
+import { dirname, join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
+import process from "node:process"
+import path from "node:path"
 
 interface Variant {
   platform: string
